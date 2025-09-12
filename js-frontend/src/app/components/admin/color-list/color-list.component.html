@@ -1,0 +1,65 @@
+<div class="flex justify-end mb-6">
+  <button
+    (click)="openAddColor()"
+    class="bg-gradient-to-r from-green-500 to-green-700 text-white px-4 py-2 rounded-lg font-medium shadow-md hover:from-green-600 hover:to-green-800 transition"
+  >
+    + Add Finish
+  </button>
+</div>
+
+<div class="max-w-3xl mx-auto pb-10">
+  <div class="overflow-auto hide-scrollbar rounded-xl shadow-2xl">
+    <table
+      class="min-w-full divide-y divide-blue-700 bg-gray-900/90 rounded-xl"
+    >
+      <thead>
+        <tr>
+          <th
+            class="px-6 py-3 text-left text-xs font-bold text-blue-300 uppercase tracking-wider bg-gradient-to-r from-blue-800 via-blue-600 to-purple-800"
+          >
+            Serial No
+          </th>
+          <th
+            class="px-6 py-3 text-left text-xs font-bold text-blue-300 uppercase tracking-wider bg-gradient-to-r from-blue-800 via-blue-600 to-purple-800"
+          >
+            Finish Name
+          </th>
+          <th
+            class="px-6 py-3 text-center text-xs font-bold text-blue-300 uppercase tracking-wider bg-gradient-to-r from-blue-800 via-blue-600 to-purple-800"
+          >
+            Actions
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr
+          *ngFor="let finish of finishes; let i = index"
+          class="hover:bg-blue-950 transition"
+        >
+          <td class="px-6 py-4 whitespace-nowrap text-gray-100">
+            {{ i + 1 }}
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap text-gray-100 font-semibold">
+            {{ finish.name }}
+          </td>
+          <td
+            class="px-6 py-4 whitespace-nowrap text-center flex gap-2 justify-center"
+          >
+            <button
+              class="bg-gradient-to-r from-yellow-400 to-orange-600 text-white px-3 py-1 rounded font-semibold shadow hover:from-yellow-600 hover:to-orange-800 transition"
+              (click)="updateFinish(finish)"
+            >
+              Update
+            </button>
+            <button
+              class="bg-gradient-to-r from-red-500 to-red-700 text-white px-3 py-1 rounded font-semibold shadow hover:from-red-700 hover:to-red-900 transition"
+              (click)="deleteFinish(finish)"
+            >
+              Delete
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

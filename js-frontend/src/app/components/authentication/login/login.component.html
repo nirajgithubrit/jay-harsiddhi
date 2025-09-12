@@ -1,0 +1,68 @@
+<div
+  class="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-900 via-blue-800 to-gray-900"
+>
+  <div
+    class="w-full max-w-md p-8 rounded-xl shadow-2xl bg-gradient-to-tr from-gray-800 via-blue-900 to-gray-700/90 border border-blue-700/40 backdrop-blur-sm"
+  >
+    <h2 class="text-2xl font-bold mb-6 text-center text-gray-100">Sign In</h2>
+    <form
+      class="space-y-6"
+      [formGroup]="loginForm"
+      (ngSubmit)="onSubmit()"
+      novalidate
+    >
+      <div>
+        <label for="email" class="block text-sm font-medium text-gray-200"
+          >Email</label
+        >
+        <input
+          id="email"
+          type="email"
+          formControlName="email"
+          class="mt-2 w-full px-4 py-2 rounded-md bg-slate-800 text-gray-100 border border-blue-700/50 focus:outline-none focus:ring-2 focus:ring-blue-400 placeholder-gray-400 transition"
+        />
+        <div
+          *ngIf="
+            loginForm.get('email')?.touched && loginForm.get('email')?.invalid
+          "
+          class="text-red-500 text-sm"
+        >
+          Enter a valid email.
+        </div>
+      </div>
+      <div>
+        <label for="password" class="block text-sm font-medium text-gray-200"
+          >Password</label
+        >
+        <input
+          id="password"
+          type="password"
+          formControlName="password"
+          class="mt-2 w-full px-4 py-2 rounded-md bg-slate-800 text-gray-100 border border-blue-700/50 focus:outline-none focus:ring-2 focus:ring-blue-400 placeholder-gray-400 transition"
+        />
+        <div
+          *ngIf="
+            loginForm.get('password')?.touched &&
+            loginForm.get('password')?.invalid
+          "
+          class="text-red-500 text-sm"
+        >
+          Password must be at least 6 characters.
+        </div>
+      </div>
+      <button
+        type="submit"
+        class="w-full py-2 px-4 rounded-md bg-gradient-to-r from-blue-500 via-blue-600 to-purple-600 text-white font-semibold shadow-md hover:from-blue-600 hover:to-purple-700 focus:ring-2 focus:ring-blue-400 transition"
+      >
+        Login
+      </button>
+    </form>
+    <div class="mt-6 text-center">
+      <a
+        href="/register"
+        class="inline-block py-2 px-4 rounded-md border border-blue-500 text-blue-300 font-semibold hover:bg-blue-900 transition"
+        >New user? Register</a
+      >
+    </div>
+  </div>
+</div>

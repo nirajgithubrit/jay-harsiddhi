@@ -1,0 +1,57 @@
+<div class="flex justify-end mb-6">
+  <button
+    (click)="openAddMaterial()"
+    class="bg-gradient-to-r from-green-500 to-green-700 text-white px-4 py-2 rounded-lg font-medium shadow-md hover:from-green-600 hover:to-green-800 transition"
+  >
+    + Add Material
+  </button>
+</div>
+
+<div
+  class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-7"
+>
+  <div
+    *ngFor="let material of materials"
+    class="bg-gradient-to-tr from-gray-800 via-blue-900 to-gray-700 p-5 rounded-xl shadow-lg flex flex-col"
+  >
+    <img
+      [src]="material.image"
+      alt=""
+      class="w-full h-36 object-cover rounded-lg border border-blue-800 mb-3"
+    />
+    <div class="flex-1 space-y-1 text-gray-100">
+      <div class="font-bold text-lg">{{ material.name }}</div>
+      <div>
+        <span
+          class="inline-block bg-purple-700 text-white text-xs px-2 rounded-full mr-1"
+          >{{ material.category }}</span
+        >
+        <span
+          *ngIf="material.finish"
+          class="inline-block bg-blue-800 text-blue-200 text-xs px-2 rounded-full"
+          >{{ material.finish }}</span
+        >
+      </div>
+      <div class="text-sm">
+        Brand: <span class="text-blue-300">{{ material.brand }}</span>
+      </div>
+      <div class="text-sm">
+        Price: <span class="text-green-300">₹{{ material.price }}</span>
+      </div>
+    </div>
+    <div class="flex gap-2 mt-5">
+      <button
+        (click)="editMaterial(material)"
+        class="flex-1 bg-gradient-to-r from-yellow-400 to-orange-500 text-white py-2 rounded-lg font-bold hover:from-yellow-500 hover:to-orange-600"
+      >
+        Edit
+      </button>
+      <button
+        (click)="deleteMaterial(material.id)"
+        class="flex-1 bg-red-600 py-2 rounded-lg text-white font-bold hover:bg-red-700"
+      >
+        Delete
+      </button>
+    </div>
+  </div>
+</div>

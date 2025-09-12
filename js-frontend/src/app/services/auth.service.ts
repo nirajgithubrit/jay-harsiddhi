@@ -4,27 +4,31 @@ import { environment } from '../../environments/environment';
 import { User } from '../types/user';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AuthService {
+  _http = inject(HttpClient);
 
-  _http = inject(HttpClient)
-
-  constructor() { }
+  constructor() {}
 
   register(userData: User) {
-    return this._http.post(environment.apiUrl + '/auth/register', userData)
+    return this._http.post(environment.apiUrl + '/auth/register', userData);
   }
 
   login(userData: User) {
-    return this._http.post(environment.apiUrl + '/auth/login', userData)
+    return this._http.post(environment.apiUrl + '/auth/login', userData);
   }
 
   get isLoggedIn() {
-    let token = localStorage.getItem("token");
+    let token = localStorage.getItem('token');
     if (token) {
       return true;
     }
     return false;
+  }
+
+  isAdmin(): boolean {
+    const user = JSON.parse(localStorage.getItem('user') ?? '');
+    return user.isAdmin || false;
   }
 }

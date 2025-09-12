@@ -7,7 +7,9 @@ async function registerUser(model) {
     let user = new User({
         name: model.name,
         email: model.email,
-        password: hasPassword
+        password: hasPassword,
+        isAdmin:false,
+        isSalesPerson:false
     })
     await user.save()
 }
@@ -26,7 +28,8 @@ async function loginUser(model) {
                 id: user._id,
                 name: user.name,
                 email: user.email,
-                isAdmin: user.isAdmin
+                isAdmin: user.isAdmin || false,
+                isSalesPerson:user.isSalesPerson || false
             },
             "secret",
             {

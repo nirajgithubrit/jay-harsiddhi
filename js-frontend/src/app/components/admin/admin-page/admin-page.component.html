@@ -1,0 +1,30 @@
+<div
+  class="min-h-screen bg-gradient-to-br from-blue-900 via-blue-800 to-gray-900 flex flex-col h-100vh"
+>
+  <app-admin-header></app-admin-header>
+  <main
+    class="container mx-auto flex-1 overflow-auto hide-scrollbar max-h-screen py-10 px-5"
+  >
+    <ul class="flex flex-wrap gap-3 justify-center mb-8">
+      <li *ngFor="let tab of tabs; let i = index">
+        <button
+          (click)="selectTab(i)"
+          [class]="
+            'px-5 py-2 rounded-lg font-medium transition ' +
+            (selectedTab === i
+              ? 'bg-gradient-to-r from-blue-600 to-purple-700 text-white shadow-lg'
+              : 'bg-gray-800 text-blue-200 hover:bg-blue-900 hover:text-white')
+          "
+        >
+          {{ tab }}
+        </button>
+      </li>
+    </ul>
+    <ng-container [ngSwitch]="selectedTab">
+      <app-material-list *ngSwitchCase="0"></app-material-list>
+      <app-brand-list *ngSwitchCase="1"></app-brand-list>
+      <app-category-list *ngSwitchCase="2"></app-category-list>
+      <app-color-list *ngSwitchCase="3"></app-color-list>
+    </ng-container>
+  </main>
+</div>
