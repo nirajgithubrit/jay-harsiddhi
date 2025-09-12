@@ -1,0 +1,27 @@
+<header
+  class="flex items-center justify-between px-4 py-4 bg-gradient-to-r from-blue-200 to-pink-200 shadow rounded-b-lg"
+>
+  <img
+    src="https://cdn-icons-png.flaticon.com/512/25/25694.png"
+    alt="Logo"
+    class="w-10 h-10 rounded-full"
+  />
+  <div class="flex items-center gap-4">
+    <span class="text-xl font-bold text-blue-800"
+      >Hello, {{ profileName }}</span
+    >
+    <img
+      *ngIf="profileImage"
+      class="w-10 h-10 rounded-full object-cover border-2 border-purple-600"
+      [src]="profileImage"
+      alt="Profile"
+      (error)="profileImage = null"
+    />
+    <div
+      *ngIf="!profileImage"
+      class="flex items-center justify-center w-10 text-xl font-bold text-blue-800 h-10 rounded-full border-2 border-blue-800"
+    >
+      {{ profileName | firstLetter }}
+    </div>
+  </div>
+</header>
