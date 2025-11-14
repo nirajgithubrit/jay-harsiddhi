@@ -1,0 +1,260 @@
+<div
+  class="min-h-screen bg-gradient-to-br from-yellow-50 via-blue-50 to-pink-100 flex flex-col h-100vh"
+>
+  <!-- Header -->
+  <app-header></app-header>
+
+  <main
+    class="container mx-auto flex-1 max-h-screen px-5 pt-8 pb-3 overflow-auto hide-scrollbar"
+  >
+    <!-- Customer Info -->
+    <div class="bg-white rounded-xl shadow p-6 mb-6">
+      <h2 class="text-2xl font-bold text-blue-800 mb-4">Customer Details</h2>
+
+      <div class="grid md:grid-cols-3 gap-4">
+        <div>
+          <label class="font-semibold text-gray-600">Name</label>
+          <input
+            type="text"
+            class="w-full border rounded-md p-2 bg-gray-100"
+            [readonly]="!editMode"
+            [(ngModel)]="customer.name"
+          />
+        </div>
+        <div>
+          <label class="font-semibold text-gray-600">Phone</label>
+          <input
+            type="text"
+            class="w-full border rounded-md p-2 bg-gray-100"
+            [readonly]="!editMode"
+            [(ngModel)]="customer.phone"
+          />
+        </div>
+        <div>
+          <label class="font-semibold text-gray-600">Address</label>
+          <input
+            type="text"
+            class="w-full border rounded-md p-2 bg-gray-100"
+            [readonly]="!editMode"
+            [(ngModel)]="customer.address"
+          />
+        </div>
+      </div>
+
+      <div class="mt-4 text-right">
+        <button
+          class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md"
+          (click)="editMode = !editMode"
+        >
+          {{ editMode ? "Save" : "Edit" }} Customer Details
+        </button>
+      </div>
+    </div>
+
+    <!-- Add Shutter Section -->
+    <div class="bg-white rounded-xl shadow p-6 mb-6">
+      <div class="flex justify-between items-center mb-4">
+        <h2 class="text-2xl font-bold text-blue-800">Estimate Details</h2>
+        <button
+          class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md"
+          (click)="toggleAddShutterForm()"
+        >
+          + Add Shutter
+        </button>
+      </div>
+
+      <!-- Add Form -->
+      <div *ngIf="showAddShutterForm" class="p-4 bg-blue-50 rounded-lg">
+        <div class="mb-4">
+          <label class="font-semibold">Select Shutter Type:</label>
+          <div class="flex flex-wrap gap-3 mt-2">
+            <button
+              *ngFor="let type of shutterTypes"
+              (click)="selectType(type)"
+              [class.bg-blue-600]="selectedType === type"
+              [class.text-white]="selectedType === type"
+              class="border px-3 py-1 rounded-md hover:bg-blue-100"
+            >
+              {{ type }}
+            </button>
+          </div>
+        </div>
+
+        <div *ngIf="selectedType" class="grid md:grid-cols-3 gap-4">
+          <!-- Height -->
+          <input
+            type="number"
+            placeholder="Height (inch)"
+            class="border p-2 rounded-md"
+            [(ngModel)]="newShutter.height"
+          />
+
+          <!-- Width -->
+          <input
+            type="number"
+            placeholder="Width (inch)"
+            class="border p-2 rounded-md"
+            [(ngModel)]="newShutter.width"
+          />
+
+          <!-- Shutter Units (NEW separate field) -->
+          <div class="flex items-center border p-2 rounded-md justify-between">
+            <label class="font-medium">Shutter Units</label>
+            <input
+              type="number"
+              min="1"
+              class="border p-1 w-20 rounded-md text-right"
+              [(ngModel)]="newShutter.units"
+              placeholder="1"
+            />
+          </div>
+
+          <!-- Hinges Type + Count (joined like your reference image) -->
+          <div class="flex items-center border p-2 rounded-md justify-between">
+            <select
+              class="border p-2 rounded-md w-1/2 mr-2"
+              [(ngModel)]="newShutter.hinges"
+            >
+              <option value="">Select Hinges Type</option>
+              <option *ngFor="let h of hingesTypes" [value]="h">{{ h }}</option>
+            </select>
+
+            <input
+              type="number"
+              min="1"
+              class="border p-1 w-20 rounded-md text-right"
+              [(ngModel)]="newShutter.hingesCount"
+              placeholder="1"
+            />
+          </div>
+
+          <!-- Profile -->
+          <select
+            class="border p-2 rounded-md"
+            [(ngModel)]="newShutter.profile"
+          >
+            <option value="">Select Profile Type</option>
+            <option *ngFor="let p of profileTypes" [value]="p">{{ p }}</option>
+          </select>
+
+          <!-- Glass -->
+          <select class="border p-2 rounded-md" [(ngModel)]="newShutter.glass">
+            <option value="">Select Glass Type</option>
+            <option *ngFor="let g of glassTypes" [value]="g">{{ g }}</option>
+          </select>
+        </div>
+
+        <div class="mt-4 text-right">
+          <button
+            class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md"
+            (click)="saveShutter()"
+          >
+            Save Shutter
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Shutters Table -->
+    <div
+      *ngIf="shutters.length > 0"
+      class="bg-white rounded-xl shadow p-6 mb-6"
+    >
+      <h2 class="text-2xl font-bold text-blue-800 mb-4">Added Shutters</h2>
+      <div class="overflow-auto">
+        <table class="w-full border-collapse">
+          <thead>
+            <tr class="bg-blue-100 text-left">
+              <th class="p-2">Type</th>
+              <th class="p-2">Height (inch)</th>
+              <th class="p-2">Width (inch)</th>
+              <th class="p-2">Profile</th>
+              <th class="p-2">Hinges</th>
+              <th class="p-2">Glass</th>
+              <th class="p-2">45mm Patti (ft)</th>
+              <th class="p-2">68mm Handal (ft)</th>
+              <th class="p-2">Units</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let s of shutters" class="border-b">
+              <td class="p-2">{{ s.type }}</td>
+              <td class="p-2">{{ s.heightInch }}</td>
+              <td class="p-2">{{ s.widthInch }}</td>
+              <td class="p-2">{{ s.profile }}</td>
+              <td class="p-2">{{ s.hinges }}({{ s.hingesCount }} Pair)</td>
+              <td class="p-2">{{ s.glass }}</td>
+              <td class="p-2">{{ s.patti45mmFoot }}</td>
+              <td class="p-2">{{ s.handal68mmFoot }}</td>
+              <td class="p-2">{{ s.units }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Material Summary -->
+    <div class="bg-white rounded-xl shadow p-6">
+      <h2 class="text-2xl font-bold text-blue-800 mb-4">
+        Total Material Details
+      </h2>
+
+      <div class="grid md:grid-cols-4 gap-4 text-center">
+        <div class="bg-blue-50 rounded-lg p-4">
+          <p class="font-semibold text-gray-700">Profile Type</p>
+
+          <div
+            *ngFor="let key of objectKeys(materialSummary.profileCount)"
+            class="mt-2"
+          >
+            <p class="font-bold text-blue-700">
+              {{ key }}
+            </p>
+            <p class="text-sm text-gray-700 ml-2">
+              45mm Patti:
+              {{
+                materialSummary.profilePatti[key]?.patti45mm?.toFixed(2) || 0
+              }}
+              ft<br />
+              68mm Handal:
+              {{
+                materialSummary.profilePatti[key]?.handal68mm?.toFixed(2) || 0
+              }}
+              ft
+            </p>
+          </div>
+        </div>
+
+        <div class="bg-blue-50 rounded-lg p-4">
+          <p class="font-semibold text-gray-700">Hinges Type</p>
+          <div *ngFor="let key of objectKeys(materialSummary.hingesCount)">
+            <p class="font-bold text-blue-700">
+              {{ key }} : {{ materialSummary.hingesCount[key] }}
+            </p>
+          </div>
+        </div>
+
+        <div class="bg-blue-50 rounded-lg p-4">
+          <p class="font-semibold text-gray-700">Glass (ft²)</p>
+          <div *ngFor="let key of objectKeys(materialSummary.glassArea)">
+            <p class="font-bold text-blue-700">
+              {{ key }} :
+              {{ materialSummary.glassArea[key] | number : "1.2-2" }}
+              ft²
+            </p>
+          </div>
+        </div>
+
+        <div class="bg-blue-50 rounded-lg p-4">
+          <p class="font-semibold text-gray-700">Connectors / Labour</p>
+          <p class="font-bold text-blue-700">
+            Connectors: {{ materialSummary.connectors }}
+          </p>
+          <p class="font-bold text-blue-700">
+            Labour: {{ materialSummary.labour }}
+          </p>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>

@@ -6,7 +6,17 @@
 
   <!-- Content -->
   <main class="container mx-auto flex-1 max-h-screen px-5 pt-8 pb-3">
-    <h2 class="text-3xl font-bold text-blue-800 mb-8">All Customer</h2>
+    <div
+      class="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-8 space-y-3 sm:space-y-0"
+    >
+      <h2 class="text-2xl sm:text-3xl font-bold text-blue-800">All Customer</h2>
+      <button
+        class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded-lg shadow-md transition w-full sm:w-auto"
+        (click)="goToAddCustomer()"
+      >
+        + Add Customer
+      </button>
+    </div>
     <div
       class="overflow-auto hide-scrollbar shadow-2xl rounded-xl"
       style="height: calc(100vh - 190px)"
@@ -64,7 +74,8 @@
         <tbody>
           <tr
             *ngFor="let customer of customers; let i = index"
-            class="hover:bg-blue-50 transition"
+            class="hover:bg-blue-50 transition cursor-pointer"
+            (click)="goToViewCustomer(i)"
           >
             <td class="px-4 py-3">{{ i + 1 }}</td>
             <td class="px-4 py-3 font-semibold text-blue-700">

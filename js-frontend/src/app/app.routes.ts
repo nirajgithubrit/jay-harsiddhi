@@ -8,11 +8,23 @@ import { AddMaterialComponent } from './components/admin/add-material/add-materi
 import { AddBrandComponent } from './components/admin/add-brand/add-brand.component';
 import { AddCategoryComponent } from './components/admin/add-category/add-category.component';
 import { AddColorComponent } from './components/admin/add-color/add-color.component';
+import { AddCustomerComponent } from './components/customer/add-customer/add-customer.component';
+import { ViewCustomerComponent } from './components/customer/view-customer/view-customer.component';
 
 export const routes: Routes = [
   {
     path: '',
     component: AllCustomer,
+    // canActivate: [authGuard]
+  },
+  {
+    path: 'add-customer',
+    component: AddCustomerComponent,
+    // canActivate: [authGuard]
+  },
+  {
+    path: 'view-customer/:id',
+    component: ViewCustomerComponent,
     // canActivate: [authGuard]
   },
   {

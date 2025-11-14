@@ -1,1 +1,88 @@
-<p>add-customer works!</p>
+<div
+  class="min-h-screen bg-gradient-to-br from-yellow-50 via-blue-50 to-pink-100 flex flex-col h-100vh"
+>
+  <!-- Header -->
+  <app-header></app-header>
+
+  <!-- Main Content -->
+  <main class="container mx-auto flex-1 max-h-screen px-5 pt-8 pb-3">
+    <!-- Page Title -->
+    <div class="flex justify-between items-center mb-8">
+      <h2 class="text-3xl font-bold text-blue-800">Add Customer</h2>
+      <a
+        routerLink="/"
+        class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold px-5 py-2 rounded-lg shadow-md transition"
+      >
+        ← Back
+      </a>
+    </div>
+
+    <!-- Form Card -->
+    <div
+      class="bg-white/90 rounded-2xl shadow-2xl p-8 max-w-2xl mx-auto border border-blue-100"
+    >
+      <h3 class="text-xl font-semibold text-blue-800 mb-6">Customer Details</h3>
+
+      <form class="space-y-5">
+        <!-- Name -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1"
+            >Full Name</label
+          >
+          <input
+            type="text"
+            placeholder="Enter full name"
+            class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-400 focus:outline-none"
+            name="name"
+            required
+          />
+        </div>
+
+        <!-- Phone -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1"
+            >Phone Number</label
+          >
+          <input
+            type="tel"
+            placeholder="Enter phone number"
+            class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-400 focus:outline-none"
+            name="phone"
+            required
+          />
+        </div>
+
+        <!-- Address -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1"
+            >Address</label
+          >
+          <textarea
+            rows="3"
+            placeholder="Enter address"
+            class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-400 focus:outline-none resize-none"
+            name="address"
+            required
+          ></textarea>
+        </div>
+
+        <!-- Buttons -->
+        <div class="flex justify-end space-x-4 pt-4">
+          <button
+            type="button"
+            class="bg-gray-300 hover:bg-gray-400 text-gray-700 font-semibold px-5 py-2 rounded-lg transition"
+            routerLink="/customers"
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-5 py-2 rounded-lg shadow-md transition"
+          >
+            Save Customer
+          </button>
+        </div>
+      </form>
+    </div>
+  </main>
+</div>

@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { HeaderComponent } from '../header/header.component';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-all-customer',
@@ -162,4 +163,14 @@ export class AllCustomer {
       invoice: 'INV003',
     },
   ];
+
+  constructor(private _router: Router) {}
+
+  goToAddCustomer() {
+    this._router.navigateByUrl('add-customer');
+  }
+
+  goToViewCustomer(id: number) {
+    this._router.navigateByUrl('view-customer/' + id);
+  }
 }
