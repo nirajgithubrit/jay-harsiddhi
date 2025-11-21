@@ -17,6 +17,8 @@ export class ViewCustomerComponent {
   editMode = false;
   showAddShutterForm = false;
   selectedType: string | null = null;
+  ifEditShutter: boolean = false;
+  selectedShutterId?: number;
 
   // -------------------------------
   // Customer Details
@@ -55,11 +57,11 @@ export class ViewCustomerComponent {
     type: '',
     height: null as number | null,
     width: null as number | null,
-    units: 1, // shutter units default
+    units: 1,
     hingesCount: 1,
-    hinges: '',
-    profile: '',
-    glass: '',
+    hinges: 'Regular Hinges',
+    profile: '8mm Edge',
+    glass: 'Smoke Glass',
   };
 
   objectKeys = Object.keys;
@@ -123,17 +125,30 @@ export class ViewCustomerComponent {
       this.inchToFoot(height) * this.inchToFoot(width) * units;
 
     // ✅ Add shutter record
-    this.shutters.push({
-      ...this.newShutter,
-      heightInch: height,
-      widthInch: width,
-      patti45mmFoot,
-      handal68mmFoot,
-      glassAreaFoot,
-    });
+    debugger;
+    if (!this.ifEditShutter) {
+      this.shutters.push({
+        ...this.newShutter,
+        heightInch: height,
+        widthInch: width,
+        patti45mmFoot,
+        handal68mmFoot,
+        glassAreaFoot,
+      });
+    } else {
+      this.shutters[this.selectedShutterId!] = {
+        ...this.newShutter,
+        heightInch: height,
+        widthInch: width,
+        patti45mmFoot,
+        handal68mmFoot,
+        glassAreaFoot,
+      };
+    }
 
     // Reset form
     this.resetShutterForm();
+    this.ifEditShutter = false;
     this.showAddShutterForm = false;
     this.selectedType = null;
   }
@@ -145,10 +160,28 @@ export class ViewCustomerComponent {
       width: null,
       units: 1,
       hingesCount: 1,
-      hinges: '',
-      profile: '',
-      glass: '',
+      hinges: 'Regular Hinges',
+      profile: '8mm Edge',
+      glass: 'Smoke Glass',
     };
+  }
+
+  editShutter(i: number, shutter: any) {
+    this.ifEditShutter = true;
+    this.showAddShutterForm = true;
+    this.selectedType = shutter.type;
+    this.selectedShutterId = i;
+
+    this.newShutter.type = shutter.type;
+    this.newShutter.height = shutter.height;
+    this.newShutter.width = shutter.width;
+    this.newShutter.hinges = shutter.hinges;
+    this.newShutter.profile = shutter.profile;
+    this.newShutter.glass = shutter.glass;
+  }
+
+  deleteShutter(i: number) {
+    this.shutters.splice(i, 1);
   }
 
   // -------------------------------
@@ -196,5 +229,9 @@ export class ViewCustomerComponent {
       labour,
       profilePatti,
     };
+  }
+
+  goToInvoice() {
+    console.log(this.materialSummary);
   }
 }
