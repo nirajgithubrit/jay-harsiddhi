@@ -59,10 +59,40 @@
           </option>
         </select>
       </div>
-      <div>
+
+      <div
+        *ngIf="materialForm.get('category')?.value == 'Profile'"
+        class="grid grid-cols-1 md:grid-cols-2 gap-5"
+      >
+        <div>
+          <label class="block text-gray-200 font-medium mb-2"
+            >Patti Price</label
+          >
+          <input
+            formControlName="patti_price"
+            type="number"
+            name="price"
+            min="0"
+            class="w-full bg-slate-800 text-gray-100 border border-blue-700/50 rounded-md px-4 py-2 focus:ring-2 focus:ring-blue-400 transition"
+          />
+        </div>
+        <div>
+          <label class="block text-gray-200 font-medium mb-2"
+            >Handal Price</label
+          >
+          <input
+            formControlName="handal_price"
+            type="number"
+            name="price"
+            min="0"
+            class="w-full bg-slate-800 text-gray-100 border border-blue-700/50 rounded-md px-4 py-2 focus:ring-2 focus:ring-blue-400 transition"
+          />
+        </div>
+      </div>
+      <div *ngIf="materialForm.get('category')?.value !== 'Profile'">
         <label class="block text-gray-200 font-medium mb-2">Price</label>
         <input
-          formControlName="price"
+          formControlName="patti_price"
           type="number"
           name="price"
           min="0"

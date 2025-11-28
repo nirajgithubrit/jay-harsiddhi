@@ -8,8 +8,9 @@ import {
 } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AdminHeaderComponent } from '../admin-header/admin-header.component';
-import { Material } from '../../../types/material';
+import { Material } from '../../../model/material';
 import { AdminService } from '../../../services/admin.service';
+import MaterialList from '../../../../assets/materials.json';
 
 @Component({
   selector: 'app-add-material',
@@ -33,73 +34,7 @@ export class AddMaterialComponent implements OnInit {
     'Aluminium',
     'Steel',
   ];
-  materials: Material[] = [
-    {
-      id: 1,
-      name: '3mm Edge Gola Patti',
-      category: 'Profile',
-      finish: 'Black',
-      brand: 'Blandox',
-      price: 1350,
-      image: 'https://via.placeholder.com/150?text=Wooden+Oak',
-    },
-    {
-      id: 2,
-      name: '3mm Edge Gola Handal',
-      category: 'Profile',
-      finish: 'Black',
-      brand: 'Blandox',
-      price: 1600,
-      image: 'https://via.placeholder.com/150?text=Steel+Grey',
-    },
-    {
-      id: 3,
-      name: '8mm Edge 20mm patti',
-      category: 'Profile',
-      finish: 'Matt Gray',
-      brand: 'Blandox',
-      price: 1300,
-      image: 'https://via.placeholder.com/150?text=Steel+Grey',
-    },
-    {
-      id: 4,
-      name: '8mm Edge 20mm Handal',
-      category: 'Profile',
-      finish: 'Matt Gray',
-      brand: 'Blandox',
-      price: 1600,
-      image: 'https://via.placeholder.com/150?text=Steel+Grey',
-    },
-    {
-      id: 5,
-      name: 'Regular Profile',
-      category: 'Connector',
-      finish: 'Steel',
-      brand: 'Bajarang',
-      price: 80,
-      image: 'https://glassco.co.in/wp-content/uploads/2023/04/GSPA-04.jpg',
-    },
-    {
-      id: 6,
-      name: '3D Softclose',
-      category: 'Hinges',
-      finish: 'Steel',
-      brand: 'Blandox',
-      price: 250,
-      image:
-        'https://m.media-amazon.com/images/I/71Wo1MyuoJL._UF350,350_QL50_.jpg',
-    },
-    {
-      id: 7,
-      name: '4mm Smoke',
-      category: 'Glass',
-      finish: 'Black',
-      brand: 'Saint-Globin',
-      price: 78,
-      image:
-        'https://5.imimg.com/data5/SELLER/Default/2023/9/345899483/SX/IS/YU/61894372/tinted-glass.jpg',
-    },
-  ];
+  materials: Material[] = MaterialList;
 
   constructor(
     private fb: FormBuilder,
@@ -109,10 +44,11 @@ export class AddMaterialComponent implements OnInit {
   ) {
     this.materialForm = this.fb.group({
       name: ['', Validators.required],
-      category: ['', Validators.required],
+      category: ['Profile', Validators.required],
       brand: ['', Validators.required],
       finish: ['', Validators.required],
-      price: ['', Validators.required],
+      patti_price: [0, Validators.required],
+      handal_price: [0, Validators.required],
       image: [''],
       imageName: [''],
     });
@@ -126,12 +62,15 @@ export class AddMaterialComponent implements OnInit {
       this.materialForm.get('category')?.patchValue(material?.category);
       this.materialForm.get('brand')?.patchValue(material?.brand);
       this.materialForm.get('finish')?.patchValue(material?.finish);
-      this.materialForm.get('price')?.patchValue(material?.price);
+      this.materialForm.get('patti_price')?.patchValue(material?.patti_price);
+      this.materialForm.get('handal_price')?.patchValue(material?.handal_price);
       this.materialForm.get('image')?.patchValue(material?.image);
     }
   }
 
   save() {
+    console.log(this.materialForm.value);
+
     this.adminService.setTab(0);
     this.router.navigateByUrl('/admin');
   }

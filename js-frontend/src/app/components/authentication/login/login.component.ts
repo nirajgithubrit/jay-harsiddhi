@@ -8,7 +8,7 @@ import {
 } from '@angular/forms';
 import { AuthService } from '../../../services/auth.service';
 import { Router } from '@angular/router';
-import { User } from '../../../types/user';
+import { User } from '../../../model/user';
 
 @Component({
   selector: 'app-login',

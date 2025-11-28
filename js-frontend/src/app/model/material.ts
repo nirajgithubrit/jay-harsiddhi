@@ -4,6 +4,7 @@ export interface Material {
   category: string;
   finish?: string;
   brand: string;
-  price: number;
+  patti_price: number;
+  handal_price: number;
   image: string;
 }

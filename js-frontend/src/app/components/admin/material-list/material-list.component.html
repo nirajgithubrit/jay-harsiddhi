@@ -36,7 +36,12 @@
         Brand: <span class="text-blue-300">{{ material.brand }}</span>
       </div>
       <div class="text-sm">
-        Price: <span class="text-green-300">₹{{ material.price }}</span>
+        {{ material.category == "Profile" ? "Patti" : "" }} Price:
+        <span class="text-green-300">₹{{ material.patti_price }}</span>
+      </div>
+      <div *ngIf="material.category == 'Profile'" class="text-sm">
+        Handal Price:
+        <span class="text-green-300">₹{{ material.handal_price }}</span>
       </div>
     </div>
     <div class="flex gap-2 mt-5">

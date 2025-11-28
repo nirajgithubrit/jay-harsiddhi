@@ -55,16 +55,26 @@
     <div class="bg-white rounded-xl shadow p-6 mb-6">
       <div class="flex justify-between items-center mb-4">
         <h2 class="text-2xl font-bold text-blue-800">Estimate Details</h2>
-        <button
-          class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md"
-          (click)="toggleAddShutterForm()"
-          [disabled]="ifEditShutter"
-        >
-          {{ !ifEditShutter ? "+ Add" : "Edit" }} Shutter
-        </button>
+        <div class="flex gap-3">
+          <button
+            class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md"
+            (click)="toggleAddShutterForm()"
+            [disabled]="ifEditShutter"
+          >
+            {{ !ifEditShutter ? "+ Add" : "Edit" }} Shutter
+          </button>
+
+          <button
+            class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md"
+            (click)="toggleAddGlassForm()"
+            [disabled]="ifEditGlass"
+          >
+            {{ !ifEditGlass ? "+ Add" : "Edit" }} Glass
+          </button>
+        </div>
       </div>
 
-      <!-- Add Form -->
+      <!-- Add Form of Shutters -->
       <div *ngIf="showAddShutterForm" class="p-4 bg-blue-50 rounded-lg">
         <div class="mb-4">
           <label class="font-semibold">Select Shutter Type:</label>
@@ -117,7 +127,9 @@
               [(ngModel)]="newShutter.hinges"
             >
               <!-- <option value="">Select Hinges Type</option> -->
-              <option *ngFor="let h of hingesTypes" [value]="h">{{ h }}</option>
+              <option *ngFor="let h of hingesTypes" [value]="h.name">
+                {{ h.name }}
+              </option>
             </select>
 
             <input
@@ -135,13 +147,17 @@
             [(ngModel)]="newShutter.profile"
           >
             <!-- <option value="">Select Profile Type</option> -->
-            <option *ngFor="let p of profileTypes" [value]="p">{{ p }}</option>
+            <option *ngFor="let p of profileTypes" [value]="p.name">
+              {{ p.name }}
+            </option>
           </select>
 
           <!-- Glass -->
           <select class="border p-2 rounded-md" [(ngModel)]="newShutter.glass">
             <!-- <option value="">Select Glass Type</option> -->
-            <option *ngFor="let g of glassTypes" [value]="g">{{ g }}</option>
+            <option *ngFor="let g of glassTypes" [value]="g.name">
+              {{ g.name }}
+            </option>
           </select>
         </div>
 
@@ -151,6 +167,81 @@
             (click)="saveShutter()"
           >
             Save Shutter
+          </button>
+        </div>
+      </div>
+
+      <!-- Add Form of Glasses -->
+      <div *ngIf="showAddGlassForm" class="p-4 bg-blue-50 rounded-lg">
+        <div class="grid md:grid-cols-3 gap-4">
+          <!-- Height -->
+          <input
+            type="number"
+            placeholder="Height (inch)"
+            class="border p-2 rounded-md"
+            [(ngModel)]="newGlass.height"
+          />
+
+          <!-- Width -->
+          <input
+            type="number"
+            placeholder="Width (inch)"
+            class="border p-2 rounded-md"
+            [(ngModel)]="newGlass.width"
+          />
+
+          <!-- Glass -->
+          <select
+            class="border p-2 rounded-md"
+            [(ngModel)]="newGlass.glassName"
+          >
+            <!-- <option value="">Select Glass Type</option> -->
+            <option *ngFor="let g of glassTypes" [value]="g.name">
+              {{ g.name }}
+            </option>
+          </select>
+
+          <!-- Glass work -->
+          <select
+            class="border p-2 rounded-md"
+            [(ngModel)]="newGlass.glassEdge"
+          >
+            <!-- <option value="">Select Glass Type</option> -->
+            <option *ngFor="let g of glassWork" [value]="g">
+              {{ g }}
+            </option>
+          </select>
+
+          <!-- Glass thickness -->
+          <select
+            class="border p-2 rounded-md"
+            [(ngModel)]="newGlass.glassThickness"
+          >
+            <!-- <option value="">Select Glass Type</option> -->
+            <option *ngFor="let g of glassThickness" [value]="g">
+              {{ g }}
+            </option>
+          </select>
+
+          <!-- Shutter Units (NEW separate field) -->
+          <div class="flex items-center border p-2 rounded-md justify-between">
+            <label class="font-medium">Glass Units</label>
+            <input
+              type="number"
+              min="1"
+              class="border p-1 w-20 rounded-md text-right"
+              [(ngModel)]="newGlass.units"
+              placeholder="1"
+            />
+          </div>
+        </div>
+
+        <div class="mt-4 text-right">
+          <button
+            class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md"
+            (click)="saveGlass()"
+          >
+            Save Glass
           </button>
         </div>
       </div>
@@ -212,6 +303,55 @@
       </div>
     </div>
 
+    <!-- Glasses Table -->
+    <div *ngIf="glasses.length > 0" class="bg-white rounded-xl shadow p-6 mb-6">
+      <h2 class="text-2xl font-bold text-blue-800 mb-4">Added Glasses</h2>
+      <div class="overflow-auto">
+        <table class="w-full border-collapse">
+          <thead>
+            <tr class="bg-blue-100 text-left">
+              <th class="p-2">Thickness</th>
+              <th class="p-2">Height (inch)</th>
+              <th class="p-2">Width (inch)</th>
+              <th class="p-2">Glass</th>
+              <th class="p-2">Edge</th>
+              <th class="p-2">Ft²</th>
+              <th class="p-2">Units</th>
+              <th class="p-2">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let g of glasses; let i = index" class="border-b">
+              <td class="p-2">{{ g.glassThickness }}</td>
+              <td class="p-2">{{ g.height }}</td>
+              <td class="p-2">{{ g.width }}</td>
+              <td class="p-2">{{ g.glassName }}</td>
+              <td class="p-2">{{ g.glassEdge }}</td>
+              <td class="p-2">{{ g.glassAreaFoot }}</td>
+              <td class="p-2">{{ g.units }}</td>
+              <td class="p-2 flex gap-3">
+                <!-- Edit Button -->
+                <button
+                  class="text-blue-600 hover:text-blue-800"
+                  (click)="editGlass(i, g)"
+                >
+                  <i class="material-icons text-lg">edit</i>
+                </button>
+
+                <!-- Delete Button -->
+                <button
+                  class="text-red-600 hover:text-red-800"
+                  (click)="deleteGlass(i)"
+                >
+                  <i class="material-icons text-lg">delete</i>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
     <!-- Material Summary -->
     <div class="bg-white rounded-xl shadow p-6">
       <h2 class="text-2xl font-bold text-blue-800 mb-4">
@@ -254,11 +394,22 @@
         </div>
 
         <div class="bg-blue-50 rounded-lg p-4">
-          <p class="font-semibold text-gray-700">Glass (ft²)</p>
+          <p class="font-semibold text-gray-700">Shutter Glasses (ft²)</p>
           <div *ngFor="let key of objectKeys(materialSummary.glassArea)">
             <p class="font-bold text-blue-700">
               {{ key }} :
               {{ materialSummary.glassArea[key] | number : "1.2-2" }}
+              ft²
+            </p>
+          </div>
+
+          <hr class="my-2" />
+          <p class="font-semibold text-gray-700">Extra Glasses (ft²)</p>
+
+          <div *ngFor="let key of objectKeys(materialSummary.addedGlassArea)">
+            <p class="font-bold text-blue-700">
+              {{ key }} :
+              {{ materialSummary.addedGlassArea[key] | number : "1.2-2" }}
               ft²
             </p>
           </div>
@@ -278,7 +429,7 @@
       <div class="mt-4 text-right">
         <button
           class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md"
-          (click)="saveShutter()"
+          (click)="submitDetails()"
         >
           Submit Details
         </button>
