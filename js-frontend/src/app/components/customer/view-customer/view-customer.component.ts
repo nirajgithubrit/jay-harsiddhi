@@ -7,6 +7,11 @@ import MaterialList from '../../../../assets/materials.json';
 import pdfMake from 'pdfmake/build/pdfmake';
 import pdfFonts from 'pdfmake/build/vfs_fonts';
 
+interface ExtraGlass {
+  values: number;
+  total: number;
+}
+
 @Component({
   selector: 'app-view-customer',
   standalone: true,
@@ -392,7 +397,7 @@ export class ViewCustomerComponent implements OnInit {
 
     for (const g of this.glasses) {
       // glass area
-      addedGlassArea[g.glassName] =
+      addedGlassArea[g.glassThickness + ' ' + g.glassName] =
         (addedGlassArea[g.glassName] || 0) + g.glassAreaFoot;
     }
 
@@ -429,30 +434,48 @@ export class ViewCustomerComponent implements OnInit {
       this.materialDetails
     );
 
-    const extraGlassAmount = this.calculateExtraGlassAmount(
-      this.materialSummary,
-      this.materialDetails
-    );
+    const extraGlassAmount: Record<string, ExtraGlass> =
+      this.calculateExtraGlassAmount(
+        this.materialSummary,
+        this.materialDetails
+      );
 
     console.log(extraGlassAmount);
 
     const labourAmount = this.materialSummary.labour * 500;
+    const invoiceItems = [
+      { name: 'Finish Profile', amount: profileAmount.grandTotal },
+      { name: 'Connector', amount: connectorAmount },
+      { name: 'Blandox 3D softclose Hings', amount: hingesAmount.grandTotal },
+      { name: 'Profile Glass', amount: glassAmount.grandTotal },
+      { name: 'Labour', amount: labourAmount },
+    ];
 
-    this.generateInvoice(
-      this.customer,
-      [
-        { name: 'Finish Profile', amount: profileAmount.grandTotal },
-        { name: 'Connector', amount: connectorAmount },
-        { name: 'Blandox 3D softclose Hings', amount: hingesAmount.grandTotal },
-        { name: 'Glass', amount: glassAmount.grandTotal },
-        { name: 'Labour', amount: labourAmount },
-      ],
+    for (const key of Object.keys(extraGlassAmount)) {
+      invoiceItems.push({
+        name:
+          key +
+          ' - ' +
+          extraGlassAmount[key].values +
+          'ft²' +
+          ' × ' +
+          this.materialDetails.find((x) => x.name == key)?.patti_price,
+        amount: extraGlassAmount[key].total,
+      });
+    }
+
+    const grandTotal =
       profileAmount.grandTotal +
-        connectorAmount +
-        hingesAmount.grandTotal +
-        glassAmount.grandTotal +
-        labourAmount
-    );
+      connectorAmount +
+      hingesAmount.grandTotal +
+      glassAmount.grandTotal +
+      labourAmount +
+      Object.values(extraGlassAmount).reduce(
+        (sum, item: any) => sum + item.total,
+        0
+      );
+
+    this.generateInvoice(this.customer, invoiceItems, grandTotal);
   }
 
   private calculateProfilePattiAmount(summary: any, products: any) {
@@ -515,11 +538,13 @@ export class ViewCustomerComponent implements OnInit {
   }
 
   private calculateExtraGlassAmount(summary: any, products: any) {
+    console.log('summary' + JSON.stringify(summary));
+
     const result: any = {};
     // let grandTotal = 0;
 
     for (const glassName in summary.addedGlassArea) {
-      if (summary.glassArea.hasOwnProperty(glassName)) {
+      if (summary.addedGlassArea.hasOwnProperty(glassName)) {
         const values = summary.addedGlassArea[glassName];
 
         const product = products.find(
@@ -570,7 +595,18 @@ export class ViewCustomerComponent implements OnInit {
   generateInvoice(customer: any, items: any[], grandTotal: number) {
     const docDefinition: any = {
       pageSize: 'A4',
-      pageMargins: [20, 10, 20, 10],
+      pageMargins: [20, 10, 20, 30],
+
+      footer: {
+        columns: [
+          {
+            text: 'Contact: Rohitbhai - 9824893895 | Kaushalbhai - 7069398271',
+            alignment: 'center',
+            fontSize: 9,
+            margin: [0, 5, 0, 5],
+          },
+        ],
+      },
 
       content: [
         {
@@ -646,7 +682,7 @@ export class ViewCustomerComponent implements OnInit {
                           fontSize: 9,
                         },
                       ],
-                      margin: [0, 4, 0, 8],
+                      margin: [0, 5, 0, 8],
                     },
 
                     // Table Header
@@ -682,8 +718,6 @@ export class ViewCustomerComponent implements OnInit {
                           [
                             {
                               text: '',
-                              bold: true,
-                              fontSize: 11,
                             },
                             {
                               text: 'Grand Total',
