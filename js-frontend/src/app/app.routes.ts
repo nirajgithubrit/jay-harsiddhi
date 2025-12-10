@@ -15,22 +15,22 @@ export const routes: Routes = [
   {
     path: '',
     component: AllCustomer,
-    // canActivate: [authGuard]
+    canActivate: [authGuard]
   },
   {
     path: 'add-customer',
     component: AddCustomerComponent,
-    // canActivate: [authGuard]
+    canActivate: [authGuard]
   },
   {
     path: 'view-customer/:id',
     component: ViewCustomerComponent,
-    // canActivate: [authGuard]
+    canActivate: [authGuard]
   },
   {
     path: 'admin',
     component: AdminPageComponent,
-    // canActivate: [authGuard]
+    canActivate: [authGuard]
   },
   {
     path: 'admin/add-material',

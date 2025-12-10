@@ -6,6 +6,7 @@ import { Material } from '../../../model/material';
 import MaterialList from '../../../../assets/materials.json';
 import pdfMake from 'pdfmake/build/pdfmake';
 import pdfFonts from 'pdfmake/build/vfs_fonts';
+import { AdminService } from '../../../services/admin.service';
 
 interface ExtraGlass {
   values: number;
@@ -28,7 +29,7 @@ export class ViewCustomerComponent implements OnInit {
   ifEditGlass: boolean = false;
   selectedShutterId?: number;
   selectedGlassId?: number;
-  materialDetails: Material[] = MaterialList;
+  materialDetails: any = [];
   customer = {
     name: 'Amit Sharma',
     phone: '9876543210',
@@ -42,9 +43,10 @@ export class ViewCustomerComponent implements OnInit {
     'Right Handal',
   ];
 
-  hingesTypes = this.materialDetails.filter((x) => x.category == 'Hinges');
-  profileTypes = this.materialDetails.filter((x) => x.category == 'Profile');
-  glassTypes = this.materialDetails.filter((x) => x.category == 'Glass');
+  categories: any = []
+  hingesTypes: any = [];
+  profileTypes: any = [];
+  glassTypes: any = [];
   glassWork = ['Ruff', 'Polish', 'Pel'];
   glassThickness = ['4mm', '6mm', '8mm', '12mm', '18mm'];
 
@@ -163,8 +165,29 @@ export class ViewCustomerComponent implements OnInit {
 
   objectKeys = Object.keys;
 
-  ngOnInit(): void {
+  constructor(private adminService: AdminService) { }
+
+  async ngOnInit() {
     (pdfMake as any).vfs = pdfFonts;
+
+    this.materialDetails = await this.getAllItemsDetails('material')
+    this.categories = await this.getAllItemsDetails('category')
+
+    this.hingesTypes = this.materialDetails.filter((x: any) => x.categoryId == this.getIdUsingCategory('Hinges'));
+    this.profileTypes = this.materialDetails.filter((x: any) => x.categoryId == this.getIdUsingCategory('Profile'));
+    this.glassTypes = this.materialDetails.filter((x: any) => x.categoryId == this.getIdUsingCategory('Glass'));
+  }
+
+  async getAllItemsDetails(type: string): Promise<any> {
+    return new Promise((resolve, reject) => {
+      this.adminService.getAllItem(type).subscribe((res) => {
+        resolve(res)
+      })
+    })
+  }
+
+  getIdUsingCategory(type: string) {
+    return this.categories.find((c: any) => c.name == type)._id
   }
 
   inchToFoot(inch: number): number {
@@ -413,7 +436,8 @@ export class ViewCustomerComponent implements OnInit {
   }
 
   submitDetails() {
-    console.log(this.materialSummary);
+    console.log(this.materialSummary, this.shutters,
+      this.glasses);
   }
 
   goToInvoice() {
@@ -459,7 +483,7 @@ export class ViewCustomerComponent implements OnInit {
           extraGlassAmount[key].values +
           'ft²' +
           ' × ' +
-          this.materialDetails.find((x) => x.name == key)?.patti_price,
+          this.materialDetails.find((x: any) => x.name == key)?.pattiPrice,
         amount: extraGlassAmount[key].total,
       });
     }
@@ -492,15 +516,15 @@ export class ViewCustomerComponent implements OnInit {
 
         if (!product) continue;
 
-        const pattiAmount = (values.patti45mm / 9.75) * product.patti_price; // convert Ft to patti so divide of 9.75
-        const handalAmount = (values.handal68mm / 9.75) * product.handal_price;
+        const pattiAmount = (values.patti45mm / 9.75) * product.pattiPrice; // convert Ft to patti so divide of 9.75
+        const handalAmount = (values.handal68mm / 9.75) * product.handalPrice;
         const total = pattiAmount + handalAmount;
 
         result[profileName] = {
           // patti45mm: values.patti45mm,
           // handal68mm: values.handal68mm,
-          // patti_price: product.patti_price,
-          // handal_price: product.handal_price,
+          // pattiPrice: product.pattiPrice,
+          // handalPrice: product.handalPrice,
           total,
         };
 
@@ -524,7 +548,7 @@ export class ViewCustomerComponent implements OnInit {
         );
 
         if (!product) continue;
-        const total = values * product.patti_price;
+        const total = values * product.pattiPrice;
 
         result[glassName] = {
           total,
@@ -552,7 +576,7 @@ export class ViewCustomerComponent implements OnInit {
         );
 
         if (!product) continue;
-        const total = values * product.patti_price;
+        const total = values * product.pattiPrice;
 
         result[glassName] = {
           values,
@@ -579,7 +603,7 @@ export class ViewCustomerComponent implements OnInit {
         );
 
         if (!product) continue;
-        const total = values * product.patti_price;
+        const total = values * product.pattiPrice;
 
         result[hingesName] = {
           total,

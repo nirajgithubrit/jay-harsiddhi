@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { AdminService } from '../../../services/admin.service';
 
 @Component({
   selector: 'app-brand-list',
@@ -9,25 +10,28 @@ import { Router } from '@angular/router';
   templateUrl: './brand-list.component.html',
   styleUrl: './brand-list.component.scss',
 })
-export class BrandListComponent {
-  brands = [
-    { id: 1, name: 'Blandox' },
-    { id: 2, name: 'Bajarang' },
-    { id: 3, name: 'Hettich' },
-    { id: 4, name: 'Sain-Globin' },
-  ];
+export class BrandListComponent implements OnInit {
+  brands: any = [];
 
-  constructor(private router: Router) {}
+  constructor(private router: Router,
+    private adminService: AdminService
+  ) { }
+
+  ngOnInit(): void {
+    this.adminService.getAllItem('brand').subscribe((res) => {
+      this.brands = res
+    })
+  }
 
   updateBrand(brand: any) {
-    // Add your update logic or modal here
-    this.router.navigateByUrl('admin/edit-brand/' + brand.id);
+    this.router.navigateByUrl('admin/edit-brand/' + brand._id);
   }
 
   deleteBrand(brand: any) {
-    // Add your delete logic here
     if (confirm('Delete brand: ' + brand.name + '?')) {
-      this.brands = this.brands.filter((b) => b !== brand);
+      this.adminService.deleteItem('brand', brand._id).subscribe((res) => {
+        this.brands = this.brands.filter((b: any) => b !== brand);
+      })
     }
   }
 

@@ -19,13 +19,7 @@ import { AdminHeaderComponent } from '../admin-header/admin-header.component';
 export class AddCategoryComponent implements OnInit {
   isEditMode: boolean = false;
   categoryForm: FormGroup;
-
-  categories = [
-    { id: 1, name: 'Profile' },
-    { id: 2, name: 'Hinges' },
-    { id: 3, name: 'Glass' },
-    { id: 4, name: 'Connector' },
-  ];
+  categoryId?: string
 
   constructor(
     private fb: FormBuilder,
@@ -37,21 +31,35 @@ export class AddCategoryComponent implements OnInit {
       name: ['', Validators.required],
     });
   }
-  ngOnInit(): void {
-    const categoryId = parseInt(this.activatedRoute.snapshot.params['id']);
-    if (categoryId) {
+  async ngOnInit() {
+    this.categoryId = this.activatedRoute.snapshot.params['id'];
+    if (this.categoryId) {
       this.isEditMode = true;
-      const category = this.getCategory(categoryId);
-      this.categoryForm.get('name')?.patchValue(category?.name);
+      const category = await this.getCategory(this.categoryId);
+      this.categoryForm.get('name')?.patchValue(category.name);
     }
   }
 
   save() {
-    this.adminService.setTab(2);
-    this.router.navigateByUrl('admin');
+    if (this.isEditMode && this.categoryId) {
+      this.adminService.updateItem('category', this.categoryId, this.categoryForm.value).subscribe((res) => {
+        this.adminService.setTab(2);
+        this.router.navigateByUrl('admin');
+      })
+    } else {
+      this.adminService.addItem('category', this.categoryForm.value).subscribe((res) => {
+        this.adminService.setTab(2);
+        this.router.navigateByUrl('admin');
+      })
+    }
+
   }
 
-  private getCategory(id: number) {
-    return this.categories.find((c: any) => c.id == id);
+  async getCategory(id: string): Promise<any> {
+    return new Promise((resolve, reject) => {
+      this.adminService.getItemById('category', id).subscribe((res) => {
+        resolve(res)
+      })
+    })
   }
 }

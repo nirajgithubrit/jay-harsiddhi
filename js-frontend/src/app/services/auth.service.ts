@@ -9,7 +9,7 @@ import { User } from '../model/user';
 export class AuthService {
   _http = inject(HttpClient);
 
-  constructor() {}
+  constructor() { }
 
   register(userData: User) {
     return this._http.post(environment.apiUrl + '/auth/register', userData);
@@ -30,5 +30,10 @@ export class AuthService {
   isAdmin(): boolean {
     const user = JSON.parse(localStorage.getItem('user') ?? '');
     return user.isAdmin || false;
+  }
+
+  logout() {
+    localStorage.removeItem('token')
+    localStorage.removeItem('user')
   }
 }

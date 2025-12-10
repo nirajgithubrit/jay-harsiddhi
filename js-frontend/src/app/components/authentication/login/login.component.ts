@@ -38,7 +38,11 @@ export class LoginComponent {
         .subscribe((res: any) => {
           localStorage.setItem('token', res.token);
           localStorage.setItem('user', JSON.stringify(res.userObj));
-          this.router.navigateByUrl('');
+          if (this.authService.isAdmin()) {
+            this.router.navigateByUrl('admin')
+          } else {
+            this.router.navigateByUrl('');
+          }
         });
     } else {
       this.loginForm.markAllAsTouched();

@@ -29,39 +29,39 @@
         <div>
           <label class="block text-gray-200 font-medium mb-2">Category</label>
           <select
-            formControlName="category"
+            formControlName="categoryId"
             name="category"
             class="w-full bg-slate-800 text-gray-100 border border-blue-700/50 rounded-md px-4 py-2 focus:ring-2 focus:ring-blue-400 transition"
           >
-            <option *ngFor="let c of categories" [value]="c">{{ c }}</option>
+            <option *ngFor="let c of categories" [value]="c._id">{{ c.name }}</option>
           </select>
         </div>
         <div>
           <label class="block text-gray-200 font-medium mb-2">Brand</label>
           <select
-            formControlName="brand"
+            formControlName="brandId"
             name="brand"
             class="w-full bg-slate-800 text-gray-100 border border-blue-700/50 rounded-md px-4 py-2 focus:ring-2 focus:ring-blue-400"
           >
-            <option *ngFor="let b of brands" [value]="b">{{ b }}</option>
+            <option *ngFor="let b of brands" [value]="b._id">{{ b.name }}</option>
           </select>
         </div>
       </div>
       <div>
         <label class="block text-gray-200 font-medium mb-2">Color Finish</label>
         <select
-          formControlName="finish"
+          formControlName="finishId"
           name="finish"
           class="w-full bg-slate-800 text-gray-100 border border-blue-700/50 rounded-md px-4 py-2 focus:ring-2"
         >
-          <option *ngFor="let color of finishes" [value]="color">
-            {{ color }}
+          <option *ngFor="let color of finishes" [value]="color._id">
+            {{ color.name }}
           </option>
         </select>
       </div>
 
       <div
-        *ngIf="materialForm.get('category')?.value == 'Profile'"
+        *ngIf="materialForm.get('categoryId')?.value == getProfileCategoryId()"
         class="grid grid-cols-1 md:grid-cols-2 gap-5"
       >
         <div>
@@ -69,7 +69,7 @@
             >Patti Price</label
           >
           <input
-            formControlName="patti_price"
+            formControlName="pattiPrice"
             type="number"
             name="price"
             min="0"
@@ -81,7 +81,7 @@
             >Handal Price</label
           >
           <input
-            formControlName="handal_price"
+            formControlName="handalPrice"
             type="number"
             name="price"
             min="0"
@@ -89,10 +89,10 @@
           />
         </div>
       </div>
-      <div *ngIf="materialForm.get('category')?.value !== 'Profile'">
+      <div *ngIf="materialForm.get('categoryId')?.value !== getProfileCategoryId()">
         <label class="block text-gray-200 font-medium mb-2">Price</label>
         <input
-          formControlName="patti_price"
+          formControlName="pattiPrice"
           type="number"
           name="price"
           min="0"

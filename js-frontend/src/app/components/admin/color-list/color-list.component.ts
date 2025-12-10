@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { AdminService } from '../../../services/admin.service';
 
 @Component({
   selector: 'app-color-list',
@@ -9,27 +10,28 @@ import { Router } from '@angular/router';
   templateUrl: './color-list.component.html',
   styleUrl: './color-list.component.scss',
 })
-export class ColorListComponent {
-  finishes = [
-    { id: 1, name: 'Black' },
-    { id: 2, name: 'Glossy Gray' },
-    { id: 3, name: 'Matt Gray' },
-    { id: 4, name: 'Rose Gold' },
-    { id: 5, name: 'Golden' },
-    { id: 6, name: 'Aluminium' },
-    { id: 7, name: 'Steel' },
-  ];
+export class ColorListComponent implements OnInit {
+  finishes: any = [];
 
-  constructor(private router: Router) {}
+  constructor(private router: Router,
+    private adminService: AdminService
+  ) { }
+
+  ngOnInit(): void {
+    this.adminService.getAllItem('color').subscribe((res) => {
+      this.finishes = res
+    })
+  }
 
   updateFinish(finish: any) {
-    this.router.navigateByUrl('admin/edit-color/' + finish.id);
+    this.router.navigateByUrl('admin/edit-color/' + finish._id);
   }
 
   deleteFinish(finish: any) {
-    // Add your delete logic here
     if (confirm('Delete brand: ' + finish.name + '?')) {
-      this.finishes = this.finishes.filter((f) => f !== finish);
+      this.adminService.deleteItem('color', finish._id).subscribe((res) => {
+        this.finishes = this.finishes.filter((f: any) => f !== finish);
+      })
     }
   }
 

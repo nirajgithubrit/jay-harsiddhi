@@ -19,16 +19,7 @@ import { AdminService } from '../../../services/admin.service';
 export class AddColorComponent implements OnInit {
   isEditMode: boolean = false;
   colorForm: FormGroup;
-
-  finishes = [
-    { id: 1, name: 'Black' },
-    { id: 2, name: 'Glossy Gray' },
-    { id: 3, name: 'Matt Gray' },
-    { id: 4, name: 'Rose Gold' },
-    { id: 5, name: 'Golden' },
-    { id: 6, name: 'Aluminium' },
-    { id: 7, name: 'Steel' },
-  ];
+  colorId?: string
 
   constructor(
     private fb: FormBuilder,
@@ -41,21 +32,34 @@ export class AddColorComponent implements OnInit {
     });
   }
 
-  ngOnInit(): void {
-    const colorId = parseInt(this.activatedRoute.snapshot.params['id']);
-    if (colorId) {
+  async ngOnInit() {
+    this.colorId = this.activatedRoute.snapshot.params['id'];
+    if (this.colorId) {
       this.isEditMode = true;
-      const color = this.getColor(colorId);
-      this.colorForm.get('name')?.patchValue(color?.name);
+      const color = await this.getColor(this.colorId);
+      this.colorForm.get('name')?.patchValue(color.name);
     }
   }
 
   save() {
-    this.adminService.setTab(3);
-    this.router.navigateByUrl('admin');
+    if (this.isEditMode && this.colorId) {
+      this.adminService.updateItem('color', this.colorId, this.colorForm.value).subscribe((res) => {
+        this.adminService.setTab(3);
+        this.router.navigateByUrl('admin');
+      })
+    } else {
+      this.adminService.addItem('color', this.colorForm.value).subscribe((res) => {
+        this.adminService.setTab(3);
+        this.router.navigateByUrl('admin');
+      })
+    }
   }
 
-  private getColor(id: number) {
-    return this.finishes.find((f: any) => f.id == id);
+  async getColor(id: string): Promise<any> {
+    return new Promise((resolve, reject) => {
+      this.adminService.getItemById('color', id).subscribe((res) => {
+        resolve(res)
+      })
+    })
   }
 }

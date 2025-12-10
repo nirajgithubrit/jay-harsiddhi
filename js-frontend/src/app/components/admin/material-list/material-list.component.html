@@ -24,24 +24,24 @@
       <div>
         <span
           class="inline-block bg-purple-700 text-white text-xs px-2 rounded-full mr-1"
-          >{{ material.category }}</span
+          >{{ getCategoryNameById(material.categoryId) }}</span
         >
         <span
-          *ngIf="material.finish"
+          *ngIf="material.finishId"
           class="inline-block bg-blue-800 text-blue-200 text-xs px-2 rounded-full"
-          >{{ material.finish }}</span
+          >{{ getFinishNamebyId(material.finishId) }}</span
         >
       </div>
       <div class="text-sm">
-        Brand: <span class="text-blue-300">{{ material.brand }}</span>
+        Brand: <span class="text-blue-300">{{ getBrandNameById(material.brandId) }}</span>
       </div>
       <div class="text-sm">
-        {{ material.category == "Profile" ? "Patti" : "" }} Price:
-        <span class="text-green-300">₹{{ material.patti_price }}</span>
+        {{ getCategoryNameById(material.categoryId) == "Profile" ? "Patti" : "" }} Price:
+        <span class="text-green-300">₹{{ material.pattiPrice }}</span>
       </div>
-      <div *ngIf="material.category == 'Profile'" class="text-sm">
+      <div *ngIf="getCategoryNameById(material.categoryId) == 'Profile'" class="text-sm">
         Handal Price:
-        <span class="text-green-300">₹{{ material.handal_price }}</span>
+        <span class="text-green-300">₹{{ material.handalPrice }}</span>
       </div>
     </div>
     <div class="flex gap-2 mt-5">

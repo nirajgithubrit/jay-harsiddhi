@@ -19,13 +19,7 @@ import { AdminService } from '../../../services/admin.service';
 export class AddBrandComponent implements OnInit {
   isEditMode: boolean = false;
   brandForm: FormGroup;
-
-  brands = [
-    { id: 1, name: 'Blandox' },
-    { id: 2, name: 'Bajarang' },
-    { id: 3, name: 'Hettich' },
-    { id: 4, name: 'Sain-Globin' },
-  ];
+  brandId?: string
 
   constructor(
     private fb: FormBuilder,
@@ -38,21 +32,34 @@ export class AddBrandComponent implements OnInit {
         name: ['', Validators.required],
       }));
   }
-  ngOnInit(): void {
-    const brandId = parseInt(this.activatedRoute.snapshot.params['id']);
-    if (brandId) {
+  async ngOnInit() {
+    this.brandId = this.activatedRoute.snapshot.params['id'];
+    if (this.brandId) {
       this.isEditMode = true;
-      const brand = this.getBrand(brandId);
-      this.brandForm.get('name')?.patchValue(brand?.name);
+      const brand = await this.getBrand(this.brandId);
+      this.brandForm.get('name')?.patchValue(brand.name);
     }
   }
 
   save() {
-    this.adminService.setTab(1);
-    this.router.navigateByUrl('admin');
+    if (this.isEditMode && this.brandId) {
+      this.adminService.updateItem('brand', this.brandId, this.brandForm.value).subscribe((res) => {
+        this.adminService.setTab(1);
+        this.router.navigateByUrl('admin');
+      })
+    } else {
+      this.adminService.addItem('brand', this.brandForm.value).subscribe((res) => {
+        this.adminService.setTab(1);
+        this.router.navigateByUrl('admin');
+      })
+    }
   }
 
-  private getBrand(id: number) {
-    return this.brands.find((b: any) => b.id == id);
+  async getBrand(id: string): Promise<any> {
+    return new Promise((resolve, reject) => {
+      this.adminService.getItemById('brand', id).subscribe((res) => {
+        resolve(res)
+      })
+    })
   }
 }

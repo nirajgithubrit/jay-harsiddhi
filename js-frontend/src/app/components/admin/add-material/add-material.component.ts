@@ -22,19 +22,12 @@ import MaterialList from '../../../../assets/materials.json';
 export class AddMaterialComponent implements OnInit {
   materialForm: FormGroup;
   isEditMode: boolean = false;
+  materialId?: string
 
-  categories: string[] = ['Profile', 'Hinges', 'Glass', 'Connector'];
-  brands: string[] = ['Blandox', 'Bajarang', 'Hettich', 'Sain-Globin'];
-  finishes: string[] = [
-    'Black',
-    'Glossy Gray',
-    'Matt Gray',
-    'Rose Gold',
-    'Golden',
-    'Aluminium',
-    'Steel',
-  ];
-  materials: Material[] = MaterialList;
+  categories: any = [];
+  brands: any = [];
+  finishes: any = [];
+  materials: Material[] = [];
 
   constructor(
     private fb: FormBuilder,
@@ -44,26 +37,32 @@ export class AddMaterialComponent implements OnInit {
   ) {
     this.materialForm = this.fb.group({
       name: ['', Validators.required],
-      category: ['Profile', Validators.required],
-      brand: ['', Validators.required],
-      finish: ['', Validators.required],
-      patti_price: [0, Validators.required],
-      handal_price: [0, Validators.required],
+      categoryId: ['Profile', Validators.required],
+      brandId: ['', Validators.required],
+      finishId: ['', Validators.required],
+      pattiPrice: [0, Validators.required],
+      handalPrice: [0, Validators.required],
       image: [''],
       imageName: [''],
     });
   }
-  ngOnInit(): void {
-    const materialId = parseInt(this.activatedRoute.snapshot.params['id']);
-    if (materialId) {
+  async ngOnInit() {
+
+    this.categories = await this.getItems('category')
+    this.brands = await this.getItems('brand')
+    this.finishes = await this.getItems('color')
+
+    this.materialId = this.activatedRoute.snapshot.params['id'];
+    if (this.materialId) {
       this.isEditMode = true;
-      const material = this.getMaterial(materialId);
+      const material = await this.getMaterial(this.materialId);
+
       this.materialForm.get('name')?.patchValue(material?.name);
-      this.materialForm.get('category')?.patchValue(material?.category);
-      this.materialForm.get('brand')?.patchValue(material?.brand);
-      this.materialForm.get('finish')?.patchValue(material?.finish);
-      this.materialForm.get('patti_price')?.patchValue(material?.patti_price);
-      this.materialForm.get('handal_price')?.patchValue(material?.handal_price);
+      this.materialForm.get('categoryId')?.patchValue(material?.categoryId);
+      this.materialForm.get('brandId')?.patchValue(material?.brandId);
+      this.materialForm.get('finishId')?.patchValue(material?.finishId);
+      this.materialForm.get('pattiPrice')?.patchValue(material?.pattiPrice);
+      this.materialForm.get('handalPrice')?.patchValue(material?.handalPrice);
       this.materialForm.get('image')?.patchValue(material?.image);
     }
   }
@@ -71,8 +70,18 @@ export class AddMaterialComponent implements OnInit {
   save() {
     console.log(this.materialForm.value);
 
-    this.adminService.setTab(0);
-    this.router.navigateByUrl('/admin');
+
+    if (this.isEditMode && this.materialId) {
+      this.adminService.updateItem('material', this.materialId, this.materialForm.value as any).subscribe((res) => {
+        this.adminService.setTab(0);
+        this.router.navigateByUrl('/admin');
+      })
+    } else {
+      this.adminService.addItem('material', this.materialForm.value as any).subscribe((res) => {
+        this.adminService.setTab(0);
+        this.router.navigateByUrl('/admin');
+      })
+    }
   }
 
   onFileSelected(event: any) {
@@ -94,9 +103,25 @@ export class AddMaterialComponent implements OnInit {
     (document.getElementById('image-upload') as HTMLInputElement).value = '';
   }
 
-  close() {}
+  close() { }
 
-  private getMaterial(id: number) {
-    return this.materials.find((x: Material) => x.id == id);
+  async getMaterial(id: string): Promise<any> {
+    return new Promise((resolve, rejct) => {
+      this.adminService.getItemById('material', id).subscribe((res) => {
+        resolve(res)
+      })
+    })
+  }
+
+  async getItems(routeName: string): Promise<any> {
+    return new Promise((resolve, reject) => {
+      this.adminService.getAllItem(routeName).subscribe((res) => {
+        resolve(res)
+      })
+    })
+  }
+
+  getProfileCategoryId() {
+    return this.categories.find((c: any) => c.name == 'Profile')?._id
   }
 }

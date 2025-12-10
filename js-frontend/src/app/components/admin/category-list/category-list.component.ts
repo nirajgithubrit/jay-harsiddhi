@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { AdminService } from '../../../services/admin.service';
 
 @Component({
   selector: 'app-category-list',
@@ -9,23 +10,28 @@ import { Router } from '@angular/router';
   templateUrl: './category-list.component.html',
   styleUrl: './category-list.component.scss',
 })
-export class CategoryListComponent {
-  categories = [
-    { id: 1, name: 'Profile' },
-    { id: 2, name: 'Hinges' },
-    { id: 3, name: 'Glass' },
-    { id: 4, name: 'Connector' },
-  ];
+export class CategoryListComponent implements OnInit {
+  categories: any = [];
 
-  constructor(private router: Router) {}
+  constructor(private router: Router,
+    private adminService: AdminService
+  ) { }
+
+  ngOnInit(): void {
+    this.adminService.getAllItem('category').subscribe((res) => {
+      this.categories = res
+    })
+  }
 
   updateCategory(category: any) {
-    this.router.navigateByUrl('admin/edit-category/' + category.id);
+    this.router.navigateByUrl('admin/edit-category/' + category._id);
   }
 
   deleteCategory(category: any) {
     if (confirm('Delete brand: ' + category.name + '?')) {
-      this.categories = this.categories.filter((c) => c !== category);
+      this.adminService.deleteItem('category', category._id).subscribe((res) => {
+        this.categories = this.categories.filter((c: any) => c !== category);
+      })
     }
   }
 

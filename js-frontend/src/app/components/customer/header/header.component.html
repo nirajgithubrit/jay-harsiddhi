@@ -1,28 +1,48 @@
 <header
   class="flex items-center justify-between px-4 py-4 bg-gradient-to-r from-blue-200 to-pink-200 shadow rounded-b-lg"
 >
+  <!-- Home Icon -->
   <img
     src="https://cdn-icons-png.flaticon.com/512/25/25694.png"
-    alt="Logo"
-    class="w-10 h-10 rounded-full"
+    alt="Home"
+    class="w-10 h-10 cursor-pointer"
     routerLink="/"
   />
-  <div class="flex items-center gap-4">
-    <span class="text-xl font-bold text-blue-800"
-      >Hello, {{ profileName }}</span
-    >
-    <img
-      *ngIf="profileImage"
-      class="w-10 h-10 rounded-full object-cover border-2 border-purple-600"
-      [src]="profileImage"
-      alt="Profile"
-      (error)="profileImage = null"
-    />
+
+  <div class="relative flex items-center gap-4">
+    <span class="text-xl font-bold text-blue-800">
+      Hello, {{ profileName }}
+    </span>
+
+    <!-- Profile Image or Initial -->
+    <div (click)="toggleMenu()" class="cursor-pointer">
+      <img
+        *ngIf="profileImage"
+        class="w-10 h-10 rounded-full object-cover border-2 border-blue-800 hover:border-blue-600 transition"
+        [src]="profileImage"
+        alt="Profile"
+        (error)="profileImage = null"
+      />
+
+      <div
+        *ngIf="!profileImage"
+        class="flex items-center justify-center w-10 h-10 rounded-full text-xl font-bold text-blue-800 border-2 border-blue-800 hover:border-blue-600 transition"
+      >
+        {{ profileName | firstLetter }}
+      </div>
+    </div>
+
+    <!-- Dropdown Menu -->
     <div
-      *ngIf="!profileImage"
-      class="flex items-center justify-center w-10 text-xl font-bold text-blue-800 h-10 rounded-full border-2 border-blue-800"
+      *ngIf="menuOpen"
+      class="absolute right-0 top-14 w-40 bg-white/80 backdrop-blur-md shadow-lg rounded-lg p-2 border border-blue-200 animate-fadeIn z-50"
     >
-      {{ profileName | firstLetter }}
+      <button
+        class="w-full text-left px-4 py-2 rounded-md text-blue-800 hover:bg-blue-100 transition"
+        (click)="logout()"
+      >
+        Logout
+      </button>
     </div>
   </div>
 </header>
