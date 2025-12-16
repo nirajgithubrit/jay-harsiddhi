@@ -2,16 +2,9 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { HeaderComponent } from '../header/header.component';
 import { FormsModule } from '@angular/forms';
-import { Material } from '../../../model/material';
-import MaterialList from '../../../../assets/materials.json';
-import pdfMake from 'pdfmake/build/pdfmake';
-import pdfFonts from 'pdfmake/build/vfs_fonts';
 import { AdminService } from '../../../services/admin.service';
-
-interface ExtraGlass {
-  values: number;
-  total: number;
-}
+import { ActivatedRoute, Router } from '@angular/router';
+import { CustomerService } from '../../../services/customer.service';
 
 @Component({
   selector: 'app-view-customer',
@@ -30,11 +23,9 @@ export class ViewCustomerComponent implements OnInit {
   selectedShutterId?: number;
   selectedGlassId?: number;
   materialDetails: any = [];
-  customer = {
-    name: 'Amit Sharma',
-    phone: '9876543210',
-    address: '123 Main St, Delhi',
-  };
+  customerId?: string
+  customer: any
+
   shutterTypes = [
     'Without Handle',
     'Top Handle',
@@ -49,99 +40,10 @@ export class ViewCustomerComponent implements OnInit {
   glassTypes: any = [];
   glassWork = ['Ruff', 'Polish', 'Pel'];
   glassThickness = ['4mm', '6mm', '8mm', '12mm', '18mm'];
-
-  shutters: any[] = [
-    {
-      type: 'Without Handle',
-      height: 24,
-      width: 24,
-      units: 1,
-      hingesCount: 1,
-      hinges: 'Regular 3D softclose hinges',
-      profile: '3mm Edge Gola',
-      glass: 'Smoke Glass',
-      heightInch: 24,
-      widthInch: 24,
-      patti45mmFoot: 8,
-      handal68mmFoot: 0,
-      glassAreaFoot: 4,
-    },
-    {
-      type: 'Top Handle',
-      height: 27,
-      width: 9,
-      units: 1,
-      hingesCount: 1,
-      hinges: '20mm Softclose Hinges',
-      profile: '20mm Regular ',
-      glass: 'Smoke Glass',
-      heightInch: 27,
-      widthInch: 9,
-      patti45mmFoot: 5.25,
-      handal68mmFoot: 0.75,
-      glassAreaFoot: 1.6875,
-    },
-    {
-      type: 'Bottom Handal',
-      height: 24,
-      width: 15,
-      units: 1,
-      hingesCount: 1,
-      hinges: 'Regular 3D softclose hinges',
-      profile: '8mm Edge Regular',
-      glass: 'Backpainted Glass',
-      heightInch: 24,
-      widthInch: 15,
-      patti45mmFoot: 5.25,
-      handal68mmFoot: 1.25,
-      glassAreaFoot: 2.5,
-    },
-    {
-      type: 'Left Handle',
-      height: 48,
-      width: 15,
-      units: 1,
-      hingesCount: 1,
-      hinges: 'Regular 3D softclose hinges',
-      profile: '1mm Edge Gola',
-      glass: 'Backpainted Glass',
-      heightInch: 48,
-      widthInch: 15,
-      patti45mmFoot: 6.5,
-      handal68mmFoot: 4,
-      glassAreaFoot: 5,
-    },
-  ];
-
-  glasses: any[] = [
-    {
-      height: 24,
-      width: 24,
-      glassName: 'Smoke Glass',
-      glassEdge: 'Ruff',
-      glassThickness: '4mm',
-      units: 1,
-      glassAreaFoot: 4,
-    },
-    {
-      height: 36,
-      width: 36,
-      glassName: 'Smoke Glass',
-      glassEdge: 'Ruff',
-      glassThickness: '4mm',
-      units: 2,
-      glassAreaFoot: 18,
-    },
-    {
-      height: 48,
-      width: 24,
-      glassName: 'Backpainted Glass',
-      glassEdge: 'Ruff',
-      glassThickness: '4mm',
-      units: 1,
-      glassAreaFoot: 8,
-    },
-  ];
+  paymentMethodTypes = ['UPI', 'Cash', 'Check', 'Net Banking'];
+  orderStatusTypes = ['Not-Confirm', 'InProgress', 'Confirm', 'Completed']
+  shutters: any = [];
+  glasses: any = [];
 
   newShutter = {
     type: '',
@@ -149,15 +51,15 @@ export class ViewCustomerComponent implements OnInit {
     width: null as number | null,
     units: 1,
     hingesCount: 1,
-    hinges: 'Regular 3D softclose hinges',
-    profile: '3mm Edge Gola',
-    glass: 'Smoke Glass',
+    hinges: null as string | null,
+    profile: null as string | null,
+    glass: null as string | null,
   };
 
   newGlass = {
     height: null as number | null,
     width: null as number | null,
-    glassName: 'Smoke Glass',
+    glassName: null as string | null,
     glassEdge: 'Ruff',
     glassThickness: '4mm',
     units: 1,
@@ -165,12 +67,25 @@ export class ViewCustomerComponent implements OnInit {
 
   objectKeys = Object.keys;
 
-  constructor(private adminService: AdminService) { }
+  constructor(private adminService: AdminService,
+    private activatedRoute: ActivatedRoute,
+    private customerService: CustomerService,
+    private router: Router) { }
 
   async ngOnInit() {
-    (pdfMake as any).vfs = pdfFonts;
 
-    this.materialDetails = await this.getAllItemsDetails('material')
+    this.customerId = this.activatedRoute.snapshot.params["id"]
+    if (this.customerId) {
+      this.customerService.getCustomerById(this.customerId).subscribe((res: any) => {
+        this.customer = res
+        this.customer.paymentMethod = res.paymentMethod ?? 'Cash'
+        this.customer.orderStatus = res.orderStatus ?? 'Not-Confirm'
+        this.shutters = res.shutters
+        this.glasses = res.extraGlasses
+      })
+    }
+
+    this.materialDetails = await this.customerService.getMaterialDetail()
     this.categories = await this.getAllItemsDetails('category')
 
     this.hingesTypes = this.materialDetails.filter((x: any) => x.categoryId == this.getIdUsingCategory('Hinges'));
@@ -214,9 +129,7 @@ export class ViewCustomerComponent implements OnInit {
     this.newShutter.type = type;
   }
 
-  // -------------------------------
   // Save shutter logic
-  // -------------------------------
   saveShutter() {
     const { type, height, width, units, hingesCount, hinges, profile, glass } =
       this.newShutter;
@@ -276,7 +189,7 @@ export class ViewCustomerComponent implements OnInit {
       };
     }
 
-    console.log(this.shutters);
+    console.log(this.customer.shutters.length != this.shutters.length);
 
     // Reset form
     this.resetShutterForm();
@@ -315,8 +228,6 @@ export class ViewCustomerComponent implements OnInit {
       };
     }
 
-    console.log(this.glasses);
-
     this.resetGlassForm();
     this.ifEditGlass = false;
     this.showAddGlassForm = false;
@@ -329,9 +240,9 @@ export class ViewCustomerComponent implements OnInit {
       width: null,
       units: 1,
       hingesCount: 1,
-      hinges: 'Regular 3D softclose hinges',
-      profile: '3mm Edge Gola',
-      glass: 'Smoke Glass',
+      hinges: this.hingesTypes[0].name,
+      profile: this.profileTypes[0].name,
+      glass: this.glassTypes[0].name,
     };
   }
 
@@ -339,7 +250,7 @@ export class ViewCustomerComponent implements OnInit {
     this.newGlass = {
       height: null as number | null,
       width: null as number | null,
-      glassName: 'Smoke Glass',
+      glassName: this.glassTypes[0].name,
       glassEdge: 'Ruff',
       glassThickness: '4mm',
       units: 1,
@@ -380,9 +291,7 @@ export class ViewCustomerComponent implements OnInit {
     this.glasses.splice(i, 1);
   }
 
-  // -------------------------------
   // Material Summary
-  // -------------------------------
   get materialSummary() {
     const profileCount: any = {};
     const hingesCount: any = {};
@@ -420,7 +329,7 @@ export class ViewCustomerComponent implements OnInit {
 
     for (const g of this.glasses) {
       // glass area
-      addedGlassArea[g.glassThickness + ' ' + g.glassName] =
+      addedGlassArea[g.glassName] =
         (addedGlassArea[g.glassName] || 0) + g.glassAreaFoot;
     }
 
@@ -435,341 +344,54 @@ export class ViewCustomerComponent implements OnInit {
     };
   }
 
-  submitDetails() {
-    console.log(this.materialSummary, this.shutters,
-      this.glasses);
-  }
-
-  goToInvoice() {
-    const profileAmount = this.calculateProfilePattiAmount(
-      this.materialSummary,
-      this.materialDetails
-    );
-
-    const connectorAmount = this.materialSummary.connectors * 80;
-
-    const hingesAmount = this.calculateHingesAmount(
-      this.materialSummary,
-      this.materialDetails
-    );
-
-    const glassAmount = this.calculateGlassAmount(
-      this.materialSummary,
-      this.materialDetails
-    );
-
-    const extraGlassAmount: Record<string, ExtraGlass> =
-      this.calculateExtraGlassAmount(
-        this.materialSummary,
-        this.materialDetails
-      );
-
-    console.log(extraGlassAmount);
-
-    const labourAmount = this.materialSummary.labour * 500;
-    const invoiceItems = [
-      { name: 'Finish Profile', amount: profileAmount.grandTotal },
-      { name: 'Connector', amount: connectorAmount },
-      { name: 'Blandox 3D softclose Hings', amount: hingesAmount.grandTotal },
-      { name: 'Profile Glass', amount: glassAmount.grandTotal },
-      { name: 'Labour', amount: labourAmount },
-    ];
-
-    for (const key of Object.keys(extraGlassAmount)) {
-      invoiceItems.push({
-        name:
-          key +
-          ' - ' +
-          extraGlassAmount[key].values +
-          'ft²' +
-          ' × ' +
-          this.materialDetails.find((x: any) => x.name == key)?.pattiPrice,
-        amount: extraGlassAmount[key].total,
-      });
+  async goToInvoice() {
+    const data = await this.customerService.getInvoiceDetails(this.materialSummary, this.materialDetails)
+    const dto = {
+      amount: data.grandTotal.toFixed(0)
+    }
+    if (this.customerId && dto.amount != this.customer.totalAmount) {
+      this.customerService.addTotalAmount(this.customerId, dto).subscribe(async (res: any) => {
+        this.customer.totalAmount = res.totalAmount
+        this.router.navigateByUrl('/view-invoice/' + this.customerId)
+      })
+    } else {
+      this.router.navigateByUrl('/view-invoice/' + this.customerId)
     }
 
-    const grandTotal =
-      profileAmount.grandTotal +
-      connectorAmount +
-      hingesAmount.grandTotal +
-      glassAmount.grandTotal +
-      labourAmount +
-      Object.values(extraGlassAmount).reduce(
-        (sum, item: any) => sum + item.total,
-        0
-      );
-
-    this.generateInvoice(this.customer, invoiceItems, grandTotal);
   }
 
-  private calculateProfilePattiAmount(summary: any, products: any) {
-    const result: any = {};
-    let grandTotal = 0;
+  saveShutters() {
+    const shutterDTO = {
+      shutters: this.shutters,
+      material: this.materialSummary
+    }
+    if (this.customerId)
+      this.customerService.addShutters(this.customerId, shutterDTO).subscribe((res) => {
+        alert('Shutters added successfully!')
+      })
+  }
 
-    for (const profileName in summary.profilePatti) {
-      if (summary.profilePatti.hasOwnProperty(profileName)) {
-        const values = summary.profilePatti[profileName];
+  saveGlasses() {
+    const glassDTO = {
+      glasses: this.glasses,
+      material: this.materialSummary
+    }
+    if (this.customerId)
+      this.customerService.addGlasses(this.customerId, glassDTO).subscribe((res) => {
+        alert('Glasses added successfully!')
+      })
+  }
 
-        const product = products.find(
-          (p: any) => p.name.trim() === profileName.trim()
-        );
-
-        if (!product) continue;
-
-        const pattiAmount = (values.patti45mm / 9.75) * product.pattiPrice; // convert Ft to patti so divide of 9.75
-        const handalAmount = (values.handal68mm / 9.75) * product.handalPrice;
-        const total = pattiAmount + handalAmount;
-
-        result[profileName] = {
-          // patti45mm: values.patti45mm,
-          // handal68mm: values.handal68mm,
-          // pattiPrice: product.pattiPrice,
-          // handalPrice: product.handalPrice,
-          total,
-        };
-
-        grandTotal += total;
-      }
+  submitOrderDetail() {
+    const orderDTO = {
+      recievedAmount: this.customer.recievedAmount ?? 0,
+      orderStatus: this.customer.orderStatus,
+      paymentMethod: this.customer.paymentMethod
     }
 
-    return { result, grandTotal };
-  }
-
-  private calculateGlassAmount(summary: any, products: any) {
-    const result: any = {};
-    let grandTotal = 0;
-
-    for (const glassName in summary.glassArea) {
-      if (summary.glassArea.hasOwnProperty(glassName)) {
-        const values = summary.glassArea[glassName];
-
-        const product = products.find(
-          (p: any) => p.name.trim() === glassName.trim()
-        );
-
-        if (!product) continue;
-        const total = values * product.pattiPrice;
-
-        result[glassName] = {
-          total,
-        };
-
-        grandTotal += total;
-      }
-    }
-
-    return { result, grandTotal };
-  }
-
-  private calculateExtraGlassAmount(summary: any, products: any) {
-    console.log('summary' + JSON.stringify(summary));
-
-    const result: any = {};
-    // let grandTotal = 0;
-
-    for (const glassName in summary.addedGlassArea) {
-      if (summary.addedGlassArea.hasOwnProperty(glassName)) {
-        const values = summary.addedGlassArea[glassName];
-
-        const product = products.find(
-          (p: any) => p.name.trim() === glassName.trim()
-        );
-
-        if (!product) continue;
-        const total = values * product.pattiPrice;
-
-        result[glassName] = {
-          values,
-          total,
-        };
-
-        // grandTotal += total;
-      }
-    }
-
-    return result;
-  }
-
-  private calculateHingesAmount(summary: any, products: any) {
-    const result: any = {};
-    let grandTotal = 0;
-
-    for (const hingesName in summary.hingesCount) {
-      if (summary.hingesCount.hasOwnProperty(hingesName)) {
-        const values = summary.hingesCount[hingesName];
-
-        const product = products.find(
-          (p: any) => p.name.trim() === hingesName.trim()
-        );
-
-        if (!product) continue;
-        const total = values * product.pattiPrice;
-
-        result[hingesName] = {
-          total,
-        };
-
-        grandTotal += total;
-      }
-    }
-
-    return { result, grandTotal };
-  }
-
-  generateInvoice(customer: any, items: any[], grandTotal: number) {
-    const docDefinition: any = {
-      pageSize: 'A4',
-      pageMargins: [20, 10, 20, 30],
-
-      footer: {
-        columns: [
-          {
-            text: 'Contact: Rohitbhai - 9824893895 | Kaushalbhai - 7069398271',
-            alignment: 'center',
-            fontSize: 9,
-            margin: [0, 5, 0, 5],
-          },
-        ],
-      },
-
-      content: [
-        {
-          table: {
-            widths: ['*'],
-            body: [
-              [
-                {
-                  stack: [
-                    // Top header
-                    {
-                      text: 'Estimate',
-                      alignment: 'center',
-                      bold: true,
-                      margin: [0, 2, 0, 4],
-                    },
-
-                    // Shop name
-                    {
-                      text: 'JAY HARSIDDHI PROFILE SHUTTER',
-                      alignment: 'center',
-                      fontSize: 14,
-                      bold: true,
-                    },
-
-                    // Address
-                    {
-                      text: 'Shop no. - 13, Lalguru Chambers, Malod Chokdi,\nNear Bypass Road, Wadhwan, Surendranagar, 363020.',
-                      alignment: 'center',
-                      margin: [0, 3, 0, 10],
-                    },
-
-                    // Customer + Invoice Details
-                    {
-                      columns: [
-                        {
-                          width: '*',
-                          stack: [
-                            {
-                              text: `Name: ${customer.name}`,
-                              bold: true,
-                              fontSize: 10,
-                            },
-                            {
-                              text: `Phone : ${customer.phone}`,
-                              bold: true,
-                              fontSize: 10,
-                            },
-                          ],
-                        },
-                        {
-                          width: 'auto',
-                          stack: [
-                            {
-                              columns: [
-                                { text: 'Invoice No.:', width: 70 },
-                                { text: '—' },
-                              ],
-                            },
-                            {
-                              columns: [
-                                { text: 'Date:', width: 70 },
-                                { text: new Date().toLocaleDateString() },
-                              ],
-                            },
-                            {
-                              columns: [
-                                { text: 'Time:', width: 70 },
-                                { text: new Date().toLocaleTimeString() },
-                              ],
-                            },
-                          ],
-                          fontSize: 9,
-                        },
-                      ],
-                      margin: [0, 5, 0, 8],
-                    },
-
-                    // Table Header
-                    {
-                      table: {
-                        widths: ['10%', '70%', '20%'],
-                        body: [
-                          [
-                            { text: 'Sr No.', bold: true },
-                            { text: 'Product Name', bold: true },
-                            { text: 'Amount', bold: true, alignment: 'right' },
-                          ],
-                          ...items.map((item, i) => [
-                            i + 1,
-                            item.name,
-                            {
-                              text: item.amount.toFixed(0),
-                              alignment: 'right',
-                            },
-                          ]),
-                          [
-                            {
-                              text: '',
-                              margin: [0, 5, 0, 5],
-                            },
-                            {
-                              text: '',
-                            },
-                            {
-                              text: '',
-                            },
-                          ],
-                          [
-                            {
-                              text: '',
-                            },
-                            {
-                              text: 'Grand Total',
-                              bold: true,
-                              alignment: 'right',
-                              fontSize: 12,
-                            },
-                            {
-                              text: grandTotal.toFixed(0),
-                              bold: true,
-                              alignment: 'right',
-                              fontSize: 12,
-                            },
-                          ],
-                        ],
-                      },
-                      margin: [0, 0, 0, 6],
-                    },
-                  ],
-                  border: true,
-                },
-              ],
-            ],
-          },
-        },
-      ],
-    };
-
-    pdfMake.createPdf(docDefinition).open();
+    if (this.customerId)
+      this.customerService.addOrderDetails(this.customerId, orderDTO).subscribe((res) => {
+        alert("Order Detail Successfully Submitted.")
+      })
   }
 }

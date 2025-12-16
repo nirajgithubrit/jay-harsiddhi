@@ -23,7 +23,7 @@
     >
       <h3 class="text-xl font-semibold text-blue-800 mb-6">Customer Details</h3>
 
-      <form class="space-y-5">
+      <form class="space-y-5" [formGroup]="customerForm">
         <!-- Name -->
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-1"
@@ -34,6 +34,7 @@
             placeholder="Enter full name"
             class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-400 focus:outline-none"
             name="name"
+            formControlName="name"
             required
           />
         </div>
@@ -48,6 +49,7 @@
             placeholder="Enter phone number"
             class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-400 focus:outline-none"
             name="phone"
+            formControlName="phoneNumber"
             required
           />
         </div>
@@ -62,6 +64,7 @@
             placeholder="Enter address"
             class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-400 focus:outline-none resize-none"
             name="address"
+            formControlName="address"
             required
           ></textarea>
         </div>
@@ -78,6 +81,7 @@
           <button
             type="submit"
             class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-5 py-2 rounded-lg shadow-md transition"
+            (click)="addCustomer()"
           >
             Save Customer
           </button>

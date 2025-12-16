@@ -1,7 +1,8 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { HeaderComponent } from '../header/header.component';
 import { Router } from '@angular/router';
+import { CustomerService } from '../../../services/customer.service';
 
 @Component({
   selector: 'app-all-customer',
@@ -10,167 +11,49 @@ import { Router } from '@angular/router';
   templateUrl: './all-customer.component.html',
   styleUrl: './all-customer.component.scss',
 })
-export class AllCustomer {
-  customers = [
-    {
-      name: 'Amit Sharma',
-      phone: '9876543210',
-      address: '123 Main St, Delhi',
-      status: 'Confirm',
-      totalAmount: 1200,
-      recievedAmount: 1200,
-      paymentType: 'Cash',
-      invoice: 'INV001',
-    },
-    {
-      name: 'Priya Singh',
-      phone: '9876501234',
-      address: '56 Market Rd, Mumbai',
-      status: 'InProgress',
-      totalAmount: 850,
-      recievedAmount: 500,
-      paymentType: 'Card',
-      invoice: 'INV002',
-    },
-    {
-      name: 'Rahul Gupta',
-      phone: '9876534432',
-      address: '89 Sector 4, Noida',
-      status: 'Completed',
-      totalAmount: 2100,
-      recievedAmount: 2100,
-      paymentType: 'UPI',
-      invoice: 'INV003',
-    },
-    {
-      name: 'Amit Sharma',
-      phone: '9876543210',
-      address: '123 Main St, Delhi',
-      status: 'Confirm',
-      totalAmount: 1200,
-      recievedAmount: 1200,
-      paymentType: 'Cash',
-      invoice: 'INV001',
-    },
-    {
-      name: 'Priya Singh',
-      phone: '9876501234',
-      address: '56 Market Rd, Mumbai',
-      status: 'InProgress',
-      totalAmount: 850,
-      recievedAmount: 500,
-      paymentType: 'Card',
-      invoice: 'INV002',
-    },
-    {
-      name: 'Rahul Gupta',
-      phone: '9876534432',
-      address: '89 Sector 4, Noida',
-      status: 'Completed',
-      totalAmount: 2100,
-      recievedAmount: 2100,
-      paymentType: 'UPI',
-      invoice: 'INV003',
-    },
-    {
-      name: 'Amit Sharma',
-      phone: '9876543210',
-      address: '123 Main St, Delhi',
-      status: 'Confirm',
-      totalAmount: 1200,
-      recievedAmount: 1200,
-      paymentType: 'Cash',
-      invoice: 'INV001',
-    },
-    {
-      name: 'Priya Singh',
-      phone: '9876501234',
-      address: '56 Market Rd, Mumbai',
-      status: 'InProgress',
-      totalAmount: 850,
-      recievedAmount: 500,
-      paymentType: 'Card',
-      invoice: 'INV002',
-    },
-    {
-      name: 'Rahul Gupta',
-      phone: '9876534432',
-      address: '89 Sector 4, Noida',
-      status: 'Completed',
-      totalAmount: 2100,
-      recievedAmount: 2100,
-      paymentType: 'UPI',
-      invoice: 'INV003',
-    },
-    {
-      name: 'Amit Sharma',
-      phone: '9876543210',
-      address: '123 Main St, Delhi',
-      status: 'Confirm',
-      totalAmount: 1200,
-      recievedAmount: 1200,
-      paymentType: 'Cash',
-      invoice: 'INV001',
-    },
-    {
-      name: 'Priya Singh',
-      phone: '9876501234',
-      address: '56 Market Rd, Mumbai',
-      status: 'InProgress',
-      totalAmount: 850,
-      recievedAmount: 500,
-      paymentType: 'Card',
-      invoice: 'INV002',
-    },
-    {
-      name: 'Rahul Gupta',
-      phone: '9876534432',
-      address: '89 Sector 4, Noida',
-      status: 'Completed',
-      totalAmount: 2100,
-      recievedAmount: 2100,
-      paymentType: 'UPI',
-      invoice: 'INV003',
-    },
-    {
-      name: 'Amit Sharma',
-      phone: '9876543210',
-      address: '123 Main St, Delhi',
-      status: 'Confirm',
-      totalAmount: 1200,
-      recievedAmount: 1200,
-      paymentType: 'Cash',
-      invoice: 'INV001',
-    },
-    {
-      name: 'Priya Singh',
-      phone: '9876501234',
-      address: '56 Market Rd, Mumbai',
-      status: 'InProgress',
-      totalAmount: 850,
-      recievedAmount: 500,
-      paymentType: 'Card',
-      invoice: 'INV002',
-    },
-    {
-      name: 'Rahul Gupta',
-      phone: '9876534432',
-      address: '89 Sector 4, Noida',
-      status: 'Completed',
-      totalAmount: 2100,
-      recievedAmount: 2100,
-      paymentType: 'UPI',
-      invoice: 'INV003',
-    },
-  ];
+export class AllCustomer implements OnInit {
+  customers: any = []
+  // [
+  //   {
+  //     name: 'Amit Sharma',
+  //     phone: '9876543210',
+  //     address: '123 Main St, Delhi',
+  //     status: 'Confirm',
+  //     totalAmount: 1200,
+  //     recievedAmount: 1200,
+  //     paymentType: 'Cash',
+  //     invoice: 'INV001',
+  //   }
+  // ];
 
-  constructor(private _router: Router) {}
+  constructor(private router: Router,
+    private customerService: CustomerService) { }
+
+  async ngOnInit() {
+    const materials = await this.getMaterials()
+    this.customerService.sendMaterialDetail(materials)
+    this.customerService.getAllCustomer().subscribe((res) => {
+      this.customers = res
+    })
+  }
 
   goToAddCustomer() {
-    this._router.navigateByUrl('add-customer');
+    this.router.navigateByUrl('add-customer');
   }
 
   goToViewCustomer(id: number) {
-    this._router.navigateByUrl('view-customer/' + id);
+    this.router.navigateByUrl('view-customer/' + id);
+  }
+
+  showInvoice(customer: any) {
+    this.router.navigateByUrl('/view-invoice/' + customer._id)
+  }
+
+  async getMaterials(): Promise<any> {
+    return new Promise((resolve, reject) => {
+      this.customerService.getAllMaterial().subscribe((res) => {
+        resolve(res)
+      })
+    })
   }
 }

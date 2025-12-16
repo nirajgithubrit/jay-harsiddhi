@@ -8,6 +8,7 @@ const brandRoute = require("./routes/brand")
 const categoryRoute = require("./routes/category")
 const colorRoute = require("./routes/color")
 const materialRoute = require("./routes/material")
+const customerRoute = require("./routes/customer")
 
 app.use(cors())
 app.use(express.json({ limit: '10mb' }));
@@ -21,6 +22,7 @@ app.use("/brand", brandRoute)
 app.use("/category", categoryRoute)
 app.use("/color", colorRoute)
 app.use("/material", materialRoute)
+app.use("/customer", customerRoute)
 
 async function connectDb() {
     await mongoose.connect("mongodb://localhost:27017/", {

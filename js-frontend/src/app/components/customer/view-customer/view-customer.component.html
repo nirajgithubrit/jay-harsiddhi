@@ -27,7 +27,7 @@
             type="text"
             class="w-full border rounded-md p-2 bg-gray-100"
             [readonly]="!editMode"
-            [(ngModel)]="customer.phone"
+            [(ngModel)]="customer.phoneNumber"
           />
         </div>
         <div>
@@ -301,6 +301,14 @@
           </tbody>
         </table>
       </div>
+      <div class="mt-4 text-right">
+        <button
+          class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md"
+          (click)="saveShutters()"
+        >
+          Save Shutters
+        </button>
+      </div>
     </div>
 
     <!-- Glasses Table -->
@@ -350,10 +358,18 @@
           </tbody>
         </table>
       </div>
+      <div class="mt-4 text-right">
+        <button
+          class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md"
+          (click)="saveGlasses()"
+        >
+          Save Glasses
+        </button>
+      </div>
     </div>
 
     <!-- Material Summary -->
-    <div class="bg-white rounded-xl shadow p-6">
+    <div class="bg-white rounded-xl shadow p-6 mb-6">
       <h2 class="text-2xl font-bold text-blue-800 mb-4">
         Total Material Details
       </h2>
@@ -429,18 +445,77 @@
       <div class="mt-4 text-right">
         <button
           class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md"
-          (click)="submitDetails()"
-        >
-          Submit Details
-        </button>
-      </div>
-      <div class="mt-4 text-right">
-        <button
-          class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md"
           (click)="goToInvoice()"
         >
           Generate Invoice
         </button>
+      </div>
+    </div>
+
+    <!-- order summary -->
+    <div class="bg-white rounded-xl shadow p-6">
+      <h2 class="text-2xl font-bold text-blue-800 mb-4">
+        Order Details
+      </h2>
+      
+      <div class="p-4 bg-blue-50 rounded-lg">
+        <div class="grid md:grid-cols-3 gap-4">
+          <!-- Total Amount -->
+           <div>
+            <label class="font-semibold text-gray-600">Total Amount</label>
+            <input
+            type="number"
+            placeholder="Total Amount"
+            class="w-full border p-2 rounded-md"
+            [(ngModel)]="customer.totalAmount"
+            [readonly]="true"
+          />
+           </div>
+
+          <!-- Recieved Amount -->
+           <div>
+            <label class="font-semibold text-gray-600">Recieved Amount</label>
+            <input
+            type="number"
+            placeholder="Recieved Amount"
+            class="w-full border p-2 rounded-md"
+            [(ngModel)]="customer.recievedAmount"
+          />
+           </div>
+
+          <!-- Payment Method -->
+           <div>
+            <label class="font-semibold text-gray-600">Payment Method</label>
+            <select
+            class="w-full border p-2 rounded-md"
+            [(ngModel)]="customer.paymentMethod"
+          >
+            <option *ngFor="let p of paymentMethodTypes" [value]="p">
+              {{ p }}
+            </option>
+          </select>
+           </div>
+
+          <!-- Order Status -->
+           <div>
+            <label class="font-semibold text-gray-600">Order Status</label>
+            <select class="w-full border p-2 rounded-md" [(ngModel)]="customer.orderStatus">
+            <option value="" selected>Select Order Status Type</option>
+            <option *ngFor="let o of orderStatusTypes" [value]="o">
+              {{ o }}
+            </option>
+          </select>
+           </div>
+        </div>
+
+        <div class="mt-4 text-right">
+          <button
+            class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md"
+            (click)="submitOrderDetail()"
+          >
+            Submit Detail
+          </button>
+        </div>
       </div>
     </div>
   </main>

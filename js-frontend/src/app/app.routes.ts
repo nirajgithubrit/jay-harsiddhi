@@ -10,6 +10,7 @@ import { AddCategoryComponent } from './components/admin/add-category/add-catego
 import { AddColorComponent } from './components/admin/add-color/add-color.component';
 import { AddCustomerComponent } from './components/customer/add-customer/add-customer.component';
 import { ViewCustomerComponent } from './components/customer/view-customer/view-customer.component';
+import { ViewInvoiceComponent } from './components/customer/view-invoice/view-invoice.component';
 
 export const routes: Routes = [
   {
@@ -25,6 +26,11 @@ export const routes: Routes = [
   {
     path: 'view-customer/:id',
     component: ViewCustomerComponent,
+    canActivate: [authGuard]
+  },
+  {
+    path: 'view-invoice/:id',
+    component: ViewInvoiceComponent,
     canActivate: [authGuard]
   },
   {
