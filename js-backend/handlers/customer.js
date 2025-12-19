@@ -48,6 +48,7 @@ async function  getCustomerMaterial(id) {
     if (customer.material) {
       customer.material.profileCount = convertMap(customer.material.profileCount);
       customer.material.hingesCount = convertMap(customer.material.hingesCount);
+      customer.material.pumpCount = convertMap(customer.material.pumpCount);
       customer.material.glassArea = convertMap(customer.material.glassArea);
       customer.material.addedGlassArea = convertMap(customer.material.addedGlassArea);
       customer.material.profilePatti = convertMap(customer.material.profilePatti);

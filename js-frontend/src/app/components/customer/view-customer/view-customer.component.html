@@ -5,11 +5,11 @@
   <app-header></app-header>
 
   <main
-    class="container mx-auto flex-1 max-h-screen px-5 pt-8 pb-3 overflow-auto hide-scrollbar"
+    class="container mx-auto flex-1 max-h-screen px-5 pt-8 pb-20 overflow-auto hide-scrollbar"
   >
     <!-- Customer Info -->
-    <div class="bg-white rounded-xl shadow p-6 mb-6">
-      <h2 class="text-2xl font-bold text-blue-800 mb-4">Customer Details</h2>
+    <div class="bg-white rounded-xl shadow p-4 sm:p-6 mb-6">
+      <h2 class="text-xl sm:text-2xl font-bold text-blue-800 mb-4">Customer Details</h2>
 
       <div class="grid md:grid-cols-3 gap-4">
         <div>
@@ -52,12 +52,15 @@
     </div>
 
     <!-- Add Shutter Section -->
-    <div class="bg-white rounded-xl shadow p-6 mb-6">
-      <div class="flex justify-between items-center mb-4">
-        <h2 class="text-2xl font-bold text-blue-800">Estimate Details</h2>
-        <div class="flex gap-3">
+    <div class="bg-white rounded-xl shadow p-4 sm:p-6 mb-6">
+      <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-4">
+        <h2 class="text-xl sm:text-2xl font-bold text-blue-800">Estimate Details</h2>
+        <div class="flex flex-col sm:flex-row gap-3">
           <button
-            class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md"
+            class="bg-blue-600 hover:bg-blue-700 text-white
+               px-4 py-2 rounded-md
+               w-full sm:w-auto
+               disabled:opacity-50 disabled:cursor-not-allowed"
             (click)="toggleAddShutterForm()"
             [disabled]="ifEditShutter"
           >
@@ -65,7 +68,10 @@
           </button>
 
           <button
-            class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md"
+            class="bg-blue-600 hover:bg-blue-700 text-white
+               px-4 py-2 rounded-md
+               w-full sm:w-auto
+               disabled:opacity-50 disabled:cursor-not-allowed"
             (click)="toggleAddGlassForm()"
             [disabled]="ifEditGlass"
           >
@@ -159,6 +165,27 @@
               {{ g.name }}
             </option>
           </select>
+
+          <!-- Gas Pump Type + unit -->
+           <div class="flex items-center border p-2 rounded-md justify-between">
+            <select
+              class="border p-2 rounded-md w-1/2 mr-2"
+              [(ngModel)]="newShutter.pump"
+            >
+              <!-- <option value="">Select Hinges Type</option> -->
+              <option *ngFor="let p of pumpTypes" [value]="p.name">
+                {{ p.name }}
+              </option>
+            </select>
+
+            <input
+              type="number"
+              min="1"
+              class="border p-1 w-20 rounded-md text-right"
+              [(ngModel)]="newShutter.pumpCount"
+              placeholder="1"
+            />
+          </div>
         </div>
 
         <div *ngIf="selectedType" class="mt-4 text-right">
@@ -250,9 +277,9 @@
     <!-- Shutters Table -->
     <div
       *ngIf="shutters.length > 0"
-      class="bg-white rounded-xl shadow p-6 mb-6"
+      class="bg-white rounded-xl shadow p-4 sm:p-6 mb-6"
     >
-      <h2 class="text-2xl font-bold text-blue-800 mb-4">Added Shutters</h2>
+      <h2 class="text-xl sm:text-2xl font-bold text-blue-800 mb-4">Added Shutters</h2>
       <div class="overflow-auto">
         <table class="w-full border-collapse">
           <thead>
@@ -277,8 +304,8 @@
               <td class="p-2">{{ s.profile }}</td>
               <td class="p-2">{{ s.hinges }}({{ s.hingesCount }} Pair)</td>
               <td class="p-2">{{ s.glass }}</td>
-              <td class="p-2">{{ s.patti45mmFoot }}</td>
-              <td class="p-2">{{ s.handal68mmFoot }}</td>
+              <td class="p-2">{{ s.patti45mmFoot.toFixed(2) }}</td>
+              <td class="p-2">{{ s.handal68mmFoot.toFixed(2) }}</td>
               <td class="p-2">{{ s.units }}</td>
               <td class="p-2 flex gap-3">
                 <!-- Edit Button -->
@@ -312,8 +339,8 @@
     </div>
 
     <!-- Glasses Table -->
-    <div *ngIf="glasses.length > 0" class="bg-white rounded-xl shadow p-6 mb-6">
-      <h2 class="text-2xl font-bold text-blue-800 mb-4">Added Glasses</h2>
+    <div *ngIf="glasses.length > 0" class="bg-white rounded-xl shadow p-4 sm:p-6 mb-6">
+      <h2 class="text-xl sm:text-2xl font-bold text-blue-800 mb-4">Added Glasses</h2>
       <div class="overflow-auto">
         <table class="w-full border-collapse">
           <thead>
@@ -369,8 +396,8 @@
     </div>
 
     <!-- Material Summary -->
-    <div class="bg-white rounded-xl shadow p-6 mb-6">
-      <h2 class="text-2xl font-bold text-blue-800 mb-4">
+    <div class="bg-white rounded-xl shadow p-4 sm:p-6 mb-6">
+      <h2 class="text-xl sm:text-2xl font-bold text-blue-800 mb-4">
         Total Material Details
       </h2>
 
@@ -405,6 +432,15 @@
           <div *ngFor="let key of objectKeys(materialSummary.hingesCount)">
             <p class="font-bold text-blue-700">
               {{ key }} : {{ materialSummary.hingesCount[key] }}
+            </p>
+          </div>
+
+          <hr class="my-2" />
+
+          <p class="font-semibold text-gray-700">Pump Type</p>
+          <div *ngFor="let key of objectKeys(materialSummary.pumpCount)">
+            <p class="font-bold text-blue-700">
+              {{ key }} : {{ materialSummary.pumpCount[key] }}
             </p>
           </div>
         </div>
@@ -453,8 +489,8 @@
     </div>
 
     <!-- order summary -->
-    <div class="bg-white rounded-xl shadow p-6">
-      <h2 class="text-2xl font-bold text-blue-800 mb-4">
+    <div class="bg-white rounded-xl shadow p-4 sm:p-6">
+      <h2 class="text-xl sm:text-2xl font-bold text-blue-800 mb-4">
         Order Details
       </h2>
       

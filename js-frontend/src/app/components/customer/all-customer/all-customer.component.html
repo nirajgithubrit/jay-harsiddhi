@@ -5,7 +5,7 @@
   <app-header></app-header>
 
   <!-- Content -->
-  <main class="container mx-auto flex-1 max-h-screen px-5 pt-8 pb-3">
+  <main class="container mx-auto flex-1 max-h-screen px-5 pt-8 pb-20 overflow-auto hide-scrollbar">
     <div
       class="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-8 space-y-3 sm:space-y-0"
     >
@@ -19,7 +19,11 @@
     </div>
     <div
       class="overflow-auto hide-scrollbar shadow-2xl rounded-xl"
-      style="height: calc(100vh - 190px)"
+      style="
+    max-height: calc(
+      100vh - 220px - var(--bottom-bar-height)
+    );
+  "
     >
       <table class="min-w-full divide-y divide-blue-200 bg-white/80 rounded-xl">
         <thead>

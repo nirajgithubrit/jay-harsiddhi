@@ -22,10 +22,10 @@ import { AdminService } from '../../../services/admin.service';
   styleUrl: './admin-page.component.scss',
 })
 export class AdminPageComponent implements OnInit {
-  tabs = ['Material Detail', 'Brands', 'Categories', 'Colors'];
+  tabs = ['Material Detail', 'Categories', 'Brands', 'Colors'];
   selectedTab = 0;
 
-  constructor(private adminService: AdminService) {}
+  constructor(private adminService: AdminService) { }
 
   ngOnInit(): void {
     this.selectedTab = this.adminService.getTab() || 0;

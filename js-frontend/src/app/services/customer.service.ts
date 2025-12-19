@@ -70,6 +70,11 @@ export class CustomerService {
         materialDetails
       );
 
+      const pumpAmount = this.calculatePumpAmount(
+        materialSummary,
+        materialDetails
+      );
+
       const glassAmount = this.calculateGlassAmount(
         materialSummary,
         materialDetails
@@ -90,6 +95,13 @@ export class CustomerService {
         { name: 'Labour', amount: labourAmount },
       ];
 
+      if (pumpAmount.grandTotal > 0) {
+        invoiceItems.push({
+          name: 'Blandox Softclose Jumper',
+          amount: pumpAmount.grandTotal
+        })
+      }
+
       for (const key of Object.keys(extraGlassAmount)) {
         invoiceItems.push({
           name:
@@ -107,6 +119,7 @@ export class CustomerService {
         profileAmount.grandTotal +
         connectorAmount +
         hingesAmount.grandTotal +
+        pumpAmount.grandTotal || 0 +
         glassAmount.grandTotal +
         labourAmount +
         Object.values(extraGlassAmount).reduce(
@@ -219,6 +232,32 @@ export class CustomerService {
         const total = values * product.pattiPrice;
 
         result[hingesName] = {
+          total,
+        };
+
+        grandTotal += total;
+      }
+    }
+
+    return { result, grandTotal };
+  }
+
+  private calculatePumpAmount(summary: any, products: any) {
+    const result: any = {};
+    let grandTotal = 0;
+
+    for (const pumpName in summary.pumpCount) {
+      if (summary.pumpCount.hasOwnProperty(pumpName)) {
+        const values = summary.pumpCount[pumpName];
+
+        const product = products.find(
+          (p: any) => p.name.trim() === pumpName.trim()
+        );
+
+        if (!product) continue;
+        const total = values * product.pattiPrice;
+
+        result[pumpName] = {
           total,
         };
 

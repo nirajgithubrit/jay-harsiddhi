@@ -35,13 +35,19 @@ export class LoginComponent {
     if (this.loginForm.valid) {
       this.authService
         .login(this.loginForm.value as User)
-        .subscribe((res: any) => {
-          localStorage.setItem('token', res.token);
-          localStorage.setItem('user', JSON.stringify(res.userObj));
-          if (this.authService.isAdmin()) {
-            this.router.navigateByUrl('admin')
-          } else {
-            this.router.navigateByUrl('');
+        .subscribe({
+          next: (res: any) => {
+            localStorage.setItem('token', res.token);
+            localStorage.setItem('user', JSON.stringify(res.userObj));
+            if (this.authService.isAdmin()) {
+              this.router.navigateByUrl('admin')
+            } else {
+              this.router.navigateByUrl('');
+            }
+          },
+          error: (err: any) => {
+            console.error('LOGIN ERROR:', JSON.stringify(err));
+            console.error(err);
           }
         });
     } else {

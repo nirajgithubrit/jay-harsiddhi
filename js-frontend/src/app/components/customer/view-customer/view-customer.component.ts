@@ -38,6 +38,7 @@ export class ViewCustomerComponent implements OnInit {
   hingesTypes: any = [];
   profileTypes: any = [];
   glassTypes: any = [];
+  pumpTypes: any = [];
   glassWork = ['Ruff', 'Polish', 'Pel'];
   glassThickness = ['4mm', '6mm', '8mm', '12mm', '18mm'];
   paymentMethodTypes = ['UPI', 'Cash', 'Check', 'Net Banking'];
@@ -51,6 +52,8 @@ export class ViewCustomerComponent implements OnInit {
     width: null as number | null,
     units: 1,
     hingesCount: 1,
+    pumpCount: 1,
+    pump: null as string | null,
     hinges: null as string | null,
     profile: null as string | null,
     glass: null as string | null,
@@ -91,6 +94,7 @@ export class ViewCustomerComponent implements OnInit {
     this.hingesTypes = this.materialDetails.filter((x: any) => x.categoryId == this.getIdUsingCategory('Hinges'));
     this.profileTypes = this.materialDetails.filter((x: any) => x.categoryId == this.getIdUsingCategory('Profile'));
     this.glassTypes = this.materialDetails.filter((x: any) => x.categoryId == this.getIdUsingCategory('Glass'));
+    this.pumpTypes = this.materialDetails.filter((x: any) => x.categoryId == this.getIdUsingCategory('Pump'));
   }
 
   async getAllItemsDetails(type: string): Promise<any> {
@@ -243,6 +247,8 @@ export class ViewCustomerComponent implements OnInit {
       hinges: this.hingesTypes[0].name,
       profile: this.profileTypes[0].name,
       glass: this.glassTypes[0].name,
+      pumpCount: 0,
+      pump: this.pumpTypes[0]?.name
     };
   }
 
@@ -269,6 +275,10 @@ export class ViewCustomerComponent implements OnInit {
     this.newShutter.hinges = shutter.hinges;
     this.newShutter.profile = shutter.profile;
     this.newShutter.glass = shutter.glass;
+    this.newShutter.pump = shutter.pump;
+    this.newShutter.hingesCount = shutter.hingesCount;
+    this.newShutter.pumpCount = shutter.pumpCount;
+    this.newShutter.units = shutter.units;
   }
 
   editGlass(i: number, glass: any) {
@@ -281,6 +291,7 @@ export class ViewCustomerComponent implements OnInit {
     this.newGlass.glassName = glass.glassName;
     this.newGlass.glassEdge = glass.glassEdge;
     this.newGlass.glassThickness = glass.glassThickness;
+    this.newGlass.units = glass.units;
   }
 
   deleteShutter(i: number) {
@@ -295,6 +306,7 @@ export class ViewCustomerComponent implements OnInit {
   get materialSummary() {
     const profileCount: any = {};
     const hingesCount: any = {};
+    const pumpCount: any = {}
     const glassArea: any = {};
     const addedGlassArea: any = {};
     const profilePatti: any = {}; // for 45mm and 68mm per profile
@@ -309,6 +321,9 @@ export class ViewCustomerComponent implements OnInit {
       // hinges count
       hingesCount[s.hinges] =
         (hingesCount[s.hinges] || 0) + s.hingesCount * s.units;
+
+      pumpCount[s.pump] =
+        (pumpCount[s.pump] || 0) + s.pumpCount * s.units;
 
       // glass area
       glassArea[s.glass] = (glassArea[s.glass] || 0) + s.glassAreaFoot;
@@ -336,6 +351,7 @@ export class ViewCustomerComponent implements OnInit {
     return {
       profileCount,
       hingesCount,
+      pumpCount,
       glassArea,
       addedGlassArea,
       connectors,

@@ -3,7 +3,7 @@
 >
   <app-admin-header></app-admin-header>
   <main
-    class="container mx-auto flex-1 overflow-auto hide-scrollbar max-h-screen py-10 px-5"
+    class="container mx-auto flex-1 overflow-auto hide-scrollbar max-h-screen py-10 pb-20 px-4"
   >
     <ul class="flex flex-wrap gap-3 justify-center mb-8">
       <li *ngFor="let tab of tabs; let i = index">
@@ -22,8 +22,8 @@
     </ul>
     <ng-container [ngSwitch]="selectedTab">
       <app-material-list *ngSwitchCase="0"></app-material-list>
-      <app-brand-list *ngSwitchCase="1"></app-brand-list>
-      <app-category-list *ngSwitchCase="2"></app-category-list>
+      <app-category-list *ngSwitchCase="1"></app-category-list>
+      <app-brand-list *ngSwitchCase="2"></app-brand-list>
       <app-color-list *ngSwitchCase="3"></app-color-list>
     </ng-container>
   </main>

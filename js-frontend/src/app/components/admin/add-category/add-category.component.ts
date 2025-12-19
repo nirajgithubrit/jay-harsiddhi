@@ -43,12 +43,12 @@ export class AddCategoryComponent implements OnInit {
   save() {
     if (this.isEditMode && this.categoryId) {
       this.adminService.updateItem('category', this.categoryId, this.categoryForm.value).subscribe((res) => {
-        this.adminService.setTab(2);
+        this.adminService.setTab(1);
         this.router.navigateByUrl('admin');
       })
     } else {
       this.adminService.addItem('category', this.categoryForm.value).subscribe((res) => {
-        this.adminService.setTab(2);
+        this.adminService.setTab(1);
         this.router.navigateByUrl('admin');
       })
     }

@@ -8,6 +8,8 @@ const ShutterSchema = new mongoose.Schema({
   units: { type: Number, default: 1 },
   hingesCount: Number,
   hinges: String,
+  pumpCount:{ type: Number, default: 0 },
+  pump:String,
   profile: String,
   glass: String,
   heightInch: Number,
@@ -38,6 +40,7 @@ const PattiSchema = new mongoose.Schema({
 const MaterialSchema = new mongoose.Schema({
   profileCount: { type: Map, of: Number, default: {} },
   hingesCount: { type: Map, of: Number, default: {} },
+  pumpCount:{type: Map, of: Number, default: {} },
   glassArea: { type: Map, of: Number, default: {} },      // totals by glassName
   addedGlassArea: { type: Map, of: Number, default: {} }, // keyed by "<thickness> <glassName>" e.g. "4mm Smoke Glass"
   connectors: { type: Number, default: 0 },
