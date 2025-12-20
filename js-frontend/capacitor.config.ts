@@ -5,7 +5,7 @@ const config: CapacitorConfig = {
   appName: 'MyApp',
   webDir: 'dist/js-frontend/browser',
   server: {
-    url: 'https://msmm42j0-4200.inc1.devtunnels.ms',
+    url: 'https://jayharsiddhi.netlify.app',
   },
 };
 
