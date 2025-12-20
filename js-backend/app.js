@@ -14,15 +14,23 @@ const customerRoute = require("./routes/customer")
 //Allow access to .env file
 dotenv.config()
 
+mongoose.set("strictQuery", true);
+
 app.use(cors({
   origin: '*',
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
 }))
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ limit: '10mb', extended: true }));
+
 app.get("/", (req, res) => {
     res.send("server running")
 })
+
+app.get("/test-db", async (req, res) => {
+  const state = mongoose.connection.readyState;
+  res.json({ mongoState: state }); 
+});
 
 app.use("/auth", authRoute)
 app.use("/brand", brandRoute)
@@ -32,11 +40,15 @@ app.use("/material", materialRoute)
 app.use("/customer", customerRoute)
 
 async function connectDb() {
+    try {
     await mongoose.connect(process.env.MONGO_URI, {
-        dbName: "jay-harsiddhi-db"
-    })
-
-    console.log("mongodb connected")
+      dbName: "jay-harsiddhi-db",
+    });
+    console.log("MongoDB connected");
+  } catch (err) {
+    console.error("MongoDB connection error:", err.message);
+    process.exit(1);
+  }
 }
 
 connectDb().catch((err) => {
