@@ -2,7 +2,6 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { HeaderComponent } from '../header/header.component';
 import { FormsModule } from '@angular/forms';
-import { AdminService } from '../../../services/admin.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CustomerService } from '../../../services/customer.service';
 
@@ -70,7 +69,7 @@ export class ViewCustomerComponent implements OnInit {
 
   objectKeys = Object.keys;
 
-  constructor(private adminService: AdminService,
+  constructor(
     private activatedRoute: ActivatedRoute,
     private customerService: CustomerService,
     private router: Router) { }
@@ -86,6 +85,8 @@ export class ViewCustomerComponent implements OnInit {
         this.shutters = res.shutters
         this.glasses = res.extraGlasses
       })
+
+      this.customerService.sendIndex(1)
     }
 
     this.materialDetails = await this.customerService.getMaterialDetail()
@@ -99,7 +100,7 @@ export class ViewCustomerComponent implements OnInit {
 
   async getAllItemsDetails(type: string): Promise<any> {
     return new Promise((resolve, reject) => {
-      this.adminService.getAllItem(type).subscribe((res) => {
+      this.customerService.getAllItem(type).subscribe((res) => {
         resolve(res)
       })
     })
@@ -111,6 +112,22 @@ export class ViewCustomerComponent implements OnInit {
 
   inchToFoot(inch: number): number {
     return +(inch / 12).toFixed(2);
+  }
+
+  editCustomer() {
+    this.editMode = !this.editMode
+    const customerDTO = {
+      name: this.customer.name,
+      phoneNumber: this.customer.phoneNumber,
+      address: this.customer.address
+    }
+
+    if (!this.editMode && this.customerId) {
+      this.customerService.updateCustomer(this.customerId, customerDTO).subscribe((res) => {
+        alert("Customer Details Updated Successfully!")
+        this.customer = res
+      })
+    }
   }
 
   toggleAddShutterForm() {
@@ -134,7 +151,7 @@ export class ViewCustomerComponent implements OnInit {
   }
 
   // Save shutter logic
-  saveShutter() {
+  async saveShutter() {
     const { type, height, width, units, hingesCount, hinges, profile, glass } =
       this.newShutter;
     if (
@@ -193,7 +210,17 @@ export class ViewCustomerComponent implements OnInit {
       };
     }
 
-    console.log(this.customer.shutters.length != this.shutters.length);
+    const data = await this.customerService.getInvoiceDetails(this.materialSummary, this.materialDetails)
+    const shutterDTO = {
+      shutters: this.shutters,
+      material: this.materialSummary,
+      amount: data.grandTotal.toFixed(0)
+    }
+    if (this.customerId)
+      this.customerService.addShutters(this.customerId, shutterDTO).subscribe((res) => {
+        alert('Shutter added successfully!')
+        this.customer = res
+      })
 
     // Reset form
     this.resetShutterForm();
@@ -202,7 +229,7 @@ export class ViewCustomerComponent implements OnInit {
     this.selectedType = null;
   }
 
-  saveGlass() {
+  async saveGlass() {
     const { height, width, glassName, glassEdge, glassThickness, units } =
       this.newGlass;
     if (
@@ -231,6 +258,18 @@ export class ViewCustomerComponent implements OnInit {
         glassAreaFoot,
       };
     }
+
+    const data = await this.customerService.getInvoiceDetails(this.materialSummary, this.materialDetails)
+    const glassDTO = {
+      glasses: this.glasses,
+      material: this.materialSummary,
+      amount: data.grandTotal.toFixed(0)
+    }
+    if (this.customerId)
+      this.customerService.addGlasses(this.customerId, glassDTO).subscribe((res) => {
+        alert('Glass added successfully!')
+        this.customer = res
+      })
 
     this.resetGlassForm();
     this.ifEditGlass = false;
@@ -294,12 +333,34 @@ export class ViewCustomerComponent implements OnInit {
     this.newGlass.units = glass.units;
   }
 
-  deleteShutter(i: number) {
+  async deleteShutter(i: number) {
     this.shutters.splice(i, 1);
+    const data = await this.customerService.getInvoiceDetails(this.materialSummary, this.materialDetails)
+    const shutterDTO = {
+      shutters: this.shutters,
+      material: this.materialSummary,
+      amount: data.grandTotal.toFixed(0)
+    }
+    if (this.customerId)
+      this.customerService.addShutters(this.customerId, shutterDTO).subscribe((res) => {
+        alert('Shutter deleted successfully!')
+        this.customer = res
+      })
   }
 
-  deleteGlass(i: number) {
+  async deleteGlass(i: number) {
     this.glasses.splice(i, 1);
+    const data = await this.customerService.getInvoiceDetails(this.materialSummary, this.materialDetails)
+    const glassDTO = {
+      glasses: this.glasses,
+      material: this.materialSummary,
+      amount: data.grandTotal.toFixed(0)
+    }
+    if (this.customerId)
+      this.customerService.addGlasses(this.customerId, glassDTO).subscribe((res) => {
+        alert('Glass deleted successfully!')
+        this.customer = res
+      })
   }
 
   // Material Summary
@@ -361,42 +422,32 @@ export class ViewCustomerComponent implements OnInit {
   }
 
   async goToInvoice() {
-    const data = await this.customerService.getInvoiceDetails(this.materialSummary, this.materialDetails)
-    const dto = {
-      amount: data.grandTotal.toFixed(0)
-    }
-    if (this.customerId && dto.amount != this.customer.totalAmount) {
-      this.customerService.addTotalAmount(this.customerId, dto).subscribe(async (res: any) => {
-        this.customer.totalAmount = res.totalAmount
-        this.router.navigateByUrl('/view-invoice/' + this.customerId)
-      })
-    } else {
+    if (this.customerId) {
       this.router.navigateByUrl('/view-invoice/' + this.customerId)
     }
-
   }
 
-  saveShutters() {
-    const shutterDTO = {
-      shutters: this.shutters,
-      material: this.materialSummary
-    }
-    if (this.customerId)
-      this.customerService.addShutters(this.customerId, shutterDTO).subscribe((res) => {
-        alert('Shutters added successfully!')
-      })
-  }
+  // saveShutters() {
+  //   const shutterDTO = {
+  //     shutters: this.shutters,
+  //     material: this.materialSummary
+  //   }
+  //   if (this.customerId)
+  //     this.customerService.addShutters(this.customerId, shutterDTO).subscribe((res) => {
+  //       alert('Shutters added successfully!')
+  //     })
+  // }
 
-  saveGlasses() {
-    const glassDTO = {
-      glasses: this.glasses,
-      material: this.materialSummary
-    }
-    if (this.customerId)
-      this.customerService.addGlasses(this.customerId, glassDTO).subscribe((res) => {
-        alert('Glasses added successfully!')
-      })
-  }
+  // saveGlasses() {
+  //   const glassDTO = {
+  //     glasses: this.glasses,
+  //     material: this.materialSummary
+  //   }
+  //   if (this.customerId)
+  //     this.customerService.addGlasses(this.customerId, glassDTO).subscribe((res) => {
+  //       alert('Glasses added successfully!')
+  //     })
+  // }
 
   submitOrderDetail() {
     const orderDTO = {

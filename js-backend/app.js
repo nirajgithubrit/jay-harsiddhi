@@ -10,6 +10,7 @@ const categoryRoute = require("./routes/category")
 const colorRoute = require("./routes/color")
 const materialRoute = require("./routes/material")
 const customerRoute = require("./routes/customer")
+const { verifyToken, isAdmin, isSalesPerson } = require("./middleware/auth-middleware")
 
 //Allow access to .env file
 dotenv.config()
@@ -33,11 +34,11 @@ app.get("/test-db", async (req, res) => {
 });
 
 app.use("/auth", authRoute)
-app.use("/brand", brandRoute)
-app.use("/category", categoryRoute)
-app.use("/color", colorRoute)
-app.use("/material", materialRoute)
-app.use("/customer", customerRoute)
+app.use("/brand", verifyToken, isAdmin, brandRoute)
+app.use("/category", verifyToken, isAdmin, categoryRoute)
+app.use("/color", verifyToken, isAdmin, colorRoute)
+app.use("/material", verifyToken, isAdmin, materialRoute)
+app.use("/customer", verifyToken, isSalesPerson, customerRoute)
 
 async function connectDb() {
     try {

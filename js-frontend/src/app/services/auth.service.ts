@@ -20,7 +20,7 @@ export class AuthService {
   }
 
   get isLoggedIn() {
-    let token = localStorage.getItem('token');
+    let token = localStorage.getItem('accessToken');
     if (token) {
       return true;
     }
@@ -32,8 +32,17 @@ export class AuthService {
     return user.isAdmin || false;
   }
 
+  isSalesPerson(): boolean {
+    const user = JSON.parse(localStorage.getItem('user') ?? '')
+    return user.isSalesPerson
+  }
+
+  userName(): string {
+    const user = JSON.parse(localStorage.getItem('user') ?? '')
+    return user.name || ''
+  }
+
   logout() {
-    localStorage.removeItem('token')
-    localStorage.removeItem('user')
+    localStorage.clear()
   }
 }

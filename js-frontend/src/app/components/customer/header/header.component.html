@@ -1,52 +1,71 @@
 <header
-  class="flex items-center justify-between px-4 py-4
-  pt-6 md:pt-4 
-  bg-gradient-to-r from-blue-200 to-pink-200 
-  shadow rounded-b-lg"
+  class="sticky top-0 z-40
+         bg-gradient-to-r from-blue-100 to-pink-100
+         shadow-sm border-b border-blue-200"
   style="padding-top: env(safe-area-inset-top);"
 >
-  <!-- Home Icon -->
-  <img
-    src="assets/images/home_icon.png"
-    alt="Home"
-    class="w-10 h-10 cursor-pointer"
-    routerLink="/"
-  />
+  <div
+    class="flex items-center justify-between
+           px-4 md:px-6
+           h-14 md:h-16"
+  >
+    <!-- Left: Home -->
+    <img
+      src="assets/images/home_icon.png"
+      alt="Home"
+      class="w-7 h-7 md:w-8 md:h-8 cursor-pointer hover:scale-105 transition"
+      routerLink="/"
+    />
 
-  <div class="relative flex items-center gap-3 md:gap-4">
-    <span class="hidden md:inline font-bold text-blue-800">
-      Hello, {{ profileName }}
-    </span>
+    <!-- Right -->
+    <div class="relative flex items-center gap-3">
+      <!-- Name (Desktop only) -->
+      <span class="hidden md:block text-sm font-semibold text-blue-900">
+        Hello, {{ authService.userName() }}
+      </span>
 
-    <!-- Profile Image or Initial -->
-    <div (click)="toggleMenu()" class="cursor-pointer">
-      <img
-        *ngIf="profileImage"
-        class="w-10 h-10 rounded-full object-cover border-2 border-blue-800 hover:border-blue-600 transition"
-        [src]="profileImage"
-        alt="Profile"
-        (error)="profileImage = null"
-      />
+      <!-- Avatar -->
+      <div (click)="toggleMenu()" class="cursor-pointer">
+        <img
+          *ngIf="profileImage"
+          [src]="profileImage"
+          (error)="profileImage = null"
+          class="w-8 h-8 md:w-9 md:h-9
+                 rounded-full object-cover
+                 border border-blue-700
+                 hover:ring-2 hover:ring-blue-300 transition"
+        />
 
-      <div
-        *ngIf="!profileImage"
-        class="flex items-center justify-center w-10 h-10 rounded-full text-xl font-bold text-blue-800 border-2 border-blue-800 hover:border-blue-600 transition"
-      >
-        {{ profileName | firstLetter }}
+        <div
+          *ngIf="!profileImage"
+          class="w-8 h-8 md:w-9 md:h-9
+                 flex items-center justify-center
+                 rounded-full
+                 font-bold text-sm
+                 text-blue-900
+                 bg-white border border-blue-700"
+        >
+          {{ authService.userName() | firstLetter }}
+        </div>
       </div>
-    </div>
 
-    <!-- Dropdown Menu -->
-    <div
-      *ngIf="menuOpen"
-      class="absolute right-0 top-14 w-40 bg-white/80 backdrop-blur-md shadow-lg rounded-lg p-2 border border-blue-200 animate-fadeIn z-50"
-    >
-      <button
-        class="w-full text-left px-4 py-2 rounded-md text-blue-800 hover:bg-blue-100 transition"
-        (click)="logout()"
+      <!-- Dropdown -->
+      <div
+        *ngIf="menuOpen"
+        class="absolute right-0 top-12
+               w-44
+               bg-white shadow-xl rounded-lg
+               border border-blue-100
+               overflow-hidden"
       >
-        Logout
-      </button>
+        <button
+          class="w-full px-4 py-2 text-left text-sm
+                 text-blue-800 hover:bg-blue-50 transition"
+          (click)="logout()"
+        >
+          Logout
+        </button>
+      </div>
     </div>
   </div>
 </header>

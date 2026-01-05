@@ -34,4 +34,20 @@ router.post("/login", async (req, res) => {
     }
 })
 
+router.post("/refresh-token", async (req, res) => {
+    const refreshToken = req.body;
+
+    if (!refreshToken) {
+        return res.status(401).json({ error: "Refresh token required" });
+    }
+
+    try {
+        const result = await refreshToken(refreshToken)
+        res.json({ accessToken: result });
+    } catch (err) {
+        return res.status(403).json({ error: "Invalid refresh token" });
+    }
+});
+
+
 module.exports = router

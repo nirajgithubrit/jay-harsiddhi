@@ -13,18 +13,6 @@ import { CustomerService } from '../../../services/customer.service';
 })
 export class AllCustomer implements OnInit {
   customers: any = []
-  // [
-  //   {
-  //     name: 'Amit Sharma',
-  //     phone: '9876543210',
-  //     address: '123 Main St, Delhi',
-  //     status: 'Confirm',
-  //     totalAmount: 1200,
-  //     recievedAmount: 1200,
-  //     paymentType: 'Cash',
-  //     invoice: 'INV001',
-  //   }
-  // ];
 
   constructor(private router: Router,
     private customerService: CustomerService) { }
@@ -35,6 +23,7 @@ export class AllCustomer implements OnInit {
     this.customerService.getAllCustomer().subscribe((res) => {
       this.customers = res
     })
+    this.customerService.sendIndex(0)
   }
 
   goToAddCustomer() {

@@ -11,6 +11,7 @@ import { AddColorComponent } from './components/admin/add-color/add-color.compon
 import { AddCustomerComponent } from './components/customer/add-customer/add-customer.component';
 import { ViewCustomerComponent } from './components/customer/view-customer/view-customer.component';
 import { ViewInvoiceComponent } from './components/customer/view-invoice/view-invoice.component';
+import { AccountPendingComponent } from './components/authentication/account-pending/account-pending.component';
 
 export const routes: Routes = [
   {
@@ -78,4 +79,8 @@ export const routes: Routes = [
     path: 'register',
     component: RegisterComponent,
   },
+  {
+    path: 'account-pending',
+    component: AccountPendingComponent
+  }
 ];

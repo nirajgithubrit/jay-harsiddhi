@@ -1,73 +1,61 @@
 const Customer = require("../db/customer");
-const Material = require("../db/material");
 
-async function addCustomer(model) {
+async function addCustomer(model, userId) {
     let customer = new Customer({
         name:model.name,
         phoneNumber:model.phoneNumber,
-        address:model.address
+        address:model.address,
+        salesPersonId: userId
     })
 
     await customer.save()
-    return customer.toObject() 
+    return customer.toObject({flattenMaps:true}) 
 }
 
-async function getAllCustomer() {
-    let customers = await Customer.find()
-    return customers.map((c)=>c.toObject())
+async function getAllCustomer(userId) {
+    let customers = await Customer.find({salesPersonId: userId})
+    return customers.map((c)=>c.toObject({flattenMaps:true}))
 }
 
 async function getCustomerById(id) {
     let customer = await Customer.findById(id)
-    return customer.toObject()
+    return customer.toObject({flattenMaps:true})
+}
+
+async function updateCustomer(id, model, userId) {
+    const customerDTO = {
+        name:model.name,
+        phoneNumber:model.phoneNumber,
+        address:model.address,
+        salesPersonId: userId
+    }
+    let customer = await Customer.findOneAndUpdate({_id:id}, customerDTO)
+    return customer.toObject({flattenMaps:true})
 }
 
 async function addShutters(id, model) {
     let customer = await Customer.findById(id)
     customer.shutters = model.shutters
     customer.material = model.material
+    customer.totalAmount = model.amount
     await customer.save()
-    return customer.toObject()
+    return customer.toObject({flattenMaps:true})
 }
 
 async function addExtraGlasses(id, model) {
     let customer = await Customer.findById(id)
     customer.extraGlasses = model.glasses
     customer.material = model.material
+    customer.totalAmount = model.amount
     await customer.save()
-    return customer.toObject()
-}
-
-async function getAllMaterial() {
-    let materials = await Material.find()
-    return materials.map((m)=>m.toObject())
-}
-
-async function  getCustomerMaterial(id) {
-    let customer = await Customer.findById(id)
-    if (customer.material) {
-      customer.material.profileCount = convertMap(customer.material.profileCount);
-      customer.material.hingesCount = convertMap(customer.material.hingesCount);
-      customer.material.pumpCount = convertMap(customer.material.pumpCount);
-      customer.material.glassArea = convertMap(customer.material.glassArea);
-      customer.material.addedGlassArea = convertMap(customer.material.addedGlassArea);
-      customer.material.profilePatti = convertMap(customer.material.profilePatti);
-    }
-    return customer.material
-}
-
-function convertMap(obj) {
-      if (!obj) return {};
-      if (obj instanceof Map) return Object.fromEntries(obj);
-      if (typeof obj === 'object') return obj; // already plain
-      return obj;
+    return customer.toObject({flattenMaps:true})
 }
 
 async function addAmount(id, model) {
     let customer = await Customer.findById(id)
     customer.totalAmount = model
     await customer.save()
-    return customer.toObject()
+    return customer.toObject({flattenMaps:true})
 }
 
 async function addOrderDetail(id, model) {
@@ -76,7 +64,7 @@ async function addOrderDetail(id, model) {
     customer.orderStatus = model.orderStatus
     customer.paymentMethod = model.paymentMethod
     await customer.save()
-    return customer.toObject()
+    return customer.toObject({flattenMaps:true})
 }
 
-module.exports = {addCustomer, getAllCustomer, addShutters, getCustomerById, addExtraGlasses, getAllMaterial, getCustomerMaterial, addAmount, addOrderDetail}
+module.exports = {addCustomer, getAllCustomer, addShutters, getCustomerById, updateCustomer, addExtraGlasses, addAmount, addOrderDetail}

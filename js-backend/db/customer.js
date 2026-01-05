@@ -53,6 +53,7 @@ const customerSchema = new mongoose.Schema({
   name: { type: String, required: true },
   phoneNumber: String,
   address: String,
+  salesPersonId: String,
   orderStatus: String,
   totalAmount:Number,
   recievedAmount:Number,

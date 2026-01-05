@@ -44,14 +44,14 @@
       <div class="mt-4 text-right">
         <button
           class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md"
-          (click)="editMode = !editMode"
+          (click)="editCustomer()"
         >
           {{ editMode ? "Save" : "Edit" }} Customer Details
         </button>
       </div>
     </div>
 
-    <!-- Add Shutter Section -->
+    <!-- Add Shutter and Add Glass Section -->
     <div class="bg-white rounded-xl shadow p-4 sm:p-6 mb-6">
       <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-4">
         <h2 class="text-xl sm:text-2xl font-bold text-blue-800">Estimate Details</h2>
@@ -328,14 +328,14 @@
           </tbody>
         </table>
       </div>
-      <div class="mt-4 text-right">
+      <!-- <div class="mt-4 text-right">
         <button
           class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md"
           (click)="saveShutters()"
         >
           Save Shutters
         </button>
-      </div>
+      </div> -->
     </div>
 
     <!-- Glasses Table -->
@@ -362,7 +362,7 @@
               <td class="p-2">{{ g.width }}</td>
               <td class="p-2">{{ g.glassName }}</td>
               <td class="p-2">{{ g.glassEdge }}</td>
-              <td class="p-2">{{ g.glassAreaFoot }}</td>
+              <td class="p-2">{{ g.glassAreaFoot.toFixed(2) }}</td>
               <td class="p-2">{{ g.units }}</td>
               <td class="p-2 flex gap-3">
                 <!-- Edit Button -->
@@ -385,18 +385,18 @@
           </tbody>
         </table>
       </div>
-      <div class="mt-4 text-right">
+      <!-- <div class="mt-4 text-right">
         <button
           class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md"
           (click)="saveGlasses()"
         >
           Save Glasses
         </button>
-      </div>
+      </div> -->
     </div>
 
     <!-- Material Summary -->
-    <div class="bg-white rounded-xl shadow p-4 sm:p-6 mb-6">
+    <div *ngIf="customer.shutters.length > 0 || customer.extraGlasses.length > 0" class="bg-white rounded-xl shadow p-4 sm:p-6 mb-6">
       <h2 class="text-xl sm:text-2xl font-bold text-blue-800 mb-4">
         Total Material Details
       </h2>
@@ -489,7 +489,7 @@
     </div>
 
     <!-- order summary -->
-    <div class="bg-white rounded-xl shadow p-4 sm:p-6">
+    <div *ngIf="customer.shutters.length > 0 || customer.extraGlasses.length > 0" class="bg-white rounded-xl shadow p-4 sm:p-6">
       <h2 class="text-xl sm:text-2xl font-bold text-blue-800 mb-4">
         Order Details
       </h2>

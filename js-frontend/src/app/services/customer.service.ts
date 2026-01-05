@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from '../../environments/environment';
 import { Glass } from '../model/glass';
+import { BehaviorSubject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -9,6 +10,8 @@ import { Glass } from '../model/glass';
 export class CustomerService {
 
   materialDetails: any = [];
+  private setIndex = new BehaviorSubject<number>(0)
+  getIndex = this.setIndex.asObservable()
 
   constructor(private http: HttpClient) { }
 
@@ -20,8 +23,16 @@ export class CustomerService {
     return this.materialDetails
   }
 
+  sendIndex(index: number) {
+    this.setIndex.next(index)
+  }
+
   addCustomer(data: any) {
     return this.http.post(environment.apiUrl + '/customer', data)
+  }
+
+  updateCustomer(id: string, data: any) {
+    return this.http.put(environment.apiUrl + '/customer/' + id, data)
   }
 
   getAllCustomer() {
@@ -40,12 +51,12 @@ export class CustomerService {
     return this.http.post(environment.apiUrl + '/customer/' + id + '/add-glasses', glasses)
   }
 
-  getCustomerMaterial(id: string) {
-    return this.http.get(environment.apiUrl + '/customer/' + id + '/customer-material')
-  }
-
   getAllMaterial() {
     return this.http.get(environment.apiUrl + '/customer/material')
+  }
+
+  getAllItem(routeName: string) {
+    return this.http.get(environment.apiUrl + '/customer/' + routeName)
   }
 
   addTotalAmount(id: string, amount: any) {

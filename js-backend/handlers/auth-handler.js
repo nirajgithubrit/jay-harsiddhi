@@ -15,33 +15,47 @@ async function registerUser(model) {
 }
 
 async function loginUser(model) {
-    let user = await User.findOne({ email: model.email })
-    let isMatched = await bcrypt.compare(model.password, user.password)
+    let user = await User.findOne({ email: model.email });
+    if (!user) return null;
 
-    if (!user) {
-        return null
-    }
+    let isMatched = await bcrypt.compare(model.password, user.password);
+    if (!isMatched) return null;
 
-    if (isMatched) {
-        const token = jwt.sign(
-            {
-                id: user._id,
-                name: user.name,
-                email: user.email,
-                isAdmin: user.isAdmin || false,
-                isSalesPerson:user.isSalesPerson || false
-            },
-            "secret",
-            {
-                expiresIn: "10h"
-            }
-        )
-        const userObj = user.toObject()
-        delete userObj.password
-        return { token, userObj }
-    } else {
-        return null
-    }
+    // Access Token (short life)
+    const accessToken = jwt.sign(
+        {
+            id: user._id,
+            email: user.email,
+            isAdmin: user.isAdmin || false,
+            isSalesPerson: user.isSalesPerson || false
+        },
+        "ACCESS_SECRET",
+        { expiresIn: "10h" }
+    );
+
+    // Refresh Token (long life)
+    const refreshToken = jwt.sign(
+        { id: user._id },
+        "REFRESH_SECRET",
+        { expiresIn: "7d" }
+    );
+
+    const userObj = user.toObject();
+    delete userObj.password;
+
+    return { accessToken, refreshToken, userObj };
 }
 
-module.exports = { registerUser, loginUser }
+async function refreshToken(model) {
+    const decoded = jwt.verify(model, "REFRESH_SECRET");
+
+        const newAccessToken = jwt.sign(
+            { id: decoded.id },
+            "ACCESS_SECRET",
+            { expiresIn: "10h" }
+        );
+
+    return newAccessToken
+}
+
+module.exports = { registerUser, loginUser, refreshToken }

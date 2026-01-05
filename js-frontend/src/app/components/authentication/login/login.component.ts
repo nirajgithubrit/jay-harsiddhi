@@ -37,12 +37,15 @@ export class LoginComponent {
         .login(this.loginForm.value as User)
         .subscribe({
           next: (res: any) => {
-            localStorage.setItem('token', res.token);
+            localStorage.setItem("accessToken", res.accessToken);
+            localStorage.setItem("refreshToken", res.refreshToken);
             localStorage.setItem('user', JSON.stringify(res.userObj));
             if (this.authService.isAdmin()) {
               this.router.navigateByUrl('admin')
-            } else {
+            } else if (this.authService.isSalesPerson()) {
               this.router.navigateByUrl('');
+            } else {
+              this.router.navigateByUrl('account-pending')
             }
           },
           error: (err: any) => {

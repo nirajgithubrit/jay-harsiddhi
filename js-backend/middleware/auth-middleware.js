@@ -8,13 +8,12 @@ function verifyToken(req, res, next) {
         });
     }
     try {
-        const decode = jwt.verify(token, "secret")
+        const decode = jwt.verify(token, "ACCESS_SECRET")
         req.user = decode
-        console.log(decode);
         next();
     } catch (err) {
         return res.status(401).send({
-            error: "Invalid token"
+            error: "Token expired"
         });
     }
 }
@@ -29,4 +28,14 @@ function isAdmin(req, res, next) {
     }
 }
 
-module.exports = { verifyToken, isAdmin }
+function isSalesPerson(req, res, next){
+    if(req.user && req.user.isSalesPerson){
+        next();
+    }else{
+        return res.status(403).send({
+            error: "Forbidden"
+        });
+    }
+}
+
+module.exports = { verifyToken, isAdmin, isSalesPerson }

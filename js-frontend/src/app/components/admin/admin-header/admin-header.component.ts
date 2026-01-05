@@ -12,12 +12,11 @@ import { AuthService } from '../../../services/auth.service';
   styleUrl: './admin-header.component.scss',
 })
 export class AdminHeaderComponent {
-  profileName = 'John Doe';
   profileImage: any;
   menuOpen = false;
-  // 'https://randomuser.me/api/portraits/men/75.jpg';
 
-  constructor(private router: Router, private authService: AuthService) { }
+  constructor(private router: Router,
+    public authService: AuthService) { }
   toggleMenu() {
     this.menuOpen = !this.menuOpen;
   }

@@ -12,11 +12,11 @@ import { AuthService } from '../../../services/auth.service';
   styleUrl: './header.component.scss',
 })
 export class HeaderComponent {
-  profileName = 'John Doe';
   profileImage: any;
   menuOpen = false;
 
-  constructor(private router: Router, private authService: AuthService) { }
+  constructor(private router: Router,
+    public authService: AuthService) { }
 
   toggleMenu() {
     this.menuOpen = !this.menuOpen;
