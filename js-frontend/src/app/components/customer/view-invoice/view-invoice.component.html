@@ -25,11 +25,11 @@
                 hover:bg-slate-100
                 transition"
         >
-          Print
+          {{isWeb == 'web' ? 'Print' : 'Print / Share'}}
         </button>
 
         <!-- Download -->
-        <button
+        <button *ngIf="isWeb == 'web'"
           (click)="downloadInvoice()"
           class="px-4 py-2 text-sm font-medium
                 text-white bg-blue-600

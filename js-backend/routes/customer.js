@@ -1,5 +1,5 @@
 const express = require("express")
-const { addCustomer, getAllCustomer, addShutters, getCustomerById, addExtraGlasses, addAmount, addOrderDetail, updateCustomer } = require("../handlers/customer")
+const { addCustomer, getAllCustomer, addShutters, getCustomerById, addExtraGlasses, addAmount, addOrderDetail, updateCustomer, addOtherDetails } = require("../handlers/customer")
 const { getCategories } = require("../handlers/category-handler")
 const { getMaterials } = require("../handlers/material-handler")
 const router = express.Router()
@@ -67,6 +67,13 @@ router.post('/:id/add-orderDetail', async(req, res)=>{
     const id = req.params["id"]
     const model = req.body
     let result = await addOrderDetail(id, model)
+    res.send(result)
+})
+
+router.post('/:id/add-other', async(req, res)=>{
+    const id = req.params["id"]
+    const model = req.body
+    const result = await addOtherDetails(id, model)
     res.send(result)
 })
 

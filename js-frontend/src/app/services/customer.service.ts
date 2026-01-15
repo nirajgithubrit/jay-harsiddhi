@@ -67,7 +67,11 @@ export class CustomerService {
     return this.http.post(environment.apiUrl + '/customer/' + id + '/add-orderDetail', data)
   }
 
-  async getInvoiceDetails(materialSummary: any, materialDetails: any): Promise<any> {
+  addOtherDetails(id: string, data: any) {
+    return this.http.post(environment.apiUrl + '/customer/' + id + '/add-other', data)
+  }
+
+  async getInvoiceDetails(materialSummary: any, materialDetails: any, otherDetail?: any[]): Promise<any> {
     return new Promise((resolve, reject) => {
       const profileAmount = this.calculateProfilePattiAmount(
         materialSummary,
@@ -98,19 +102,30 @@ export class CustomerService {
         );
 
       const labourAmount = materialSummary.labour * 500;
-      const invoiceItems = [
-        { name: 'Finish Profile', amount: profileAmount.grandTotal },
-        { name: 'Connector', amount: connectorAmount },
-        { name: 'Blandox 3D softclose Hings', amount: hingesAmount.grandTotal },
-        { name: 'Profile Glass', amount: glassAmount.grandTotal },
-        { name: 'Labour', amount: labourAmount },
-      ];
+      let invoiceItems = [];
+
+      if (profileAmount.grandTotal > 0) {
+        invoiceItems.push({ name: 'Finish Profile', amount: profileAmount.grandTotal })
+      }
+
+      if (connectorAmount > 0) {
+        invoiceItems.push({ name: 'Connector', amount: connectorAmount })
+      }
+
+      if (hingesAmount.grandTotal > 0) {
+        invoiceItems.push({ name: 'Blandox 3D softclose Hings', amount: hingesAmount.grandTotal })
+      }
+
+      if (glassAmount.grandTotal > 0) {
+        invoiceItems.push({ name: 'Profile Glass', amount: glassAmount.grandTotal })
+      }
 
       if (pumpAmount.grandTotal > 0) {
-        invoiceItems.push({
-          name: 'Blandox Softclose Jumper',
-          amount: pumpAmount.grandTotal
-        })
+        invoiceItems.push({ name: 'Blandox Softclose Jumper', amount: pumpAmount.grandTotal })
+      }
+
+      if (labourAmount > 0) {
+        invoiceItems.push({ name: 'Profile Labour', amount: labourAmount })
       }
 
       for (const key of Object.keys(extraGlassAmount)) {
@@ -126,17 +141,27 @@ export class CustomerService {
         });
       }
 
+      for (let other of otherDetail ?? []) {
+        invoiceItems.push({
+          name: other.key,
+          amount: other.value
+        })
+      }
+
       const grandTotal =
         profileAmount.grandTotal +
         connectorAmount +
         hingesAmount.grandTotal +
-        pumpAmount.grandTotal || 0 +
+        (pumpAmount.grandTotal || 0) +
         glassAmount.grandTotal +
         labourAmount +
-        Object.values(extraGlassAmount).reduce(
+        (Object.values(extraGlassAmount).reduce(
           (sum, item: any) => sum + item.total,
           0
-        );
+        ) || 0) +
+        (otherDetail?.reduce((sum, item) => {
+          return sum + Number(item.value || 0)
+        }, 0) || 0);
 
       resolve({ invoiceItems, grandTotal })
     })

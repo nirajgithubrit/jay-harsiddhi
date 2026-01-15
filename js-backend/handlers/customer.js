@@ -67,4 +67,12 @@ async function addOrderDetail(id, model) {
     return customer.toObject({flattenMaps:true})
 }
 
-module.exports = {addCustomer, getAllCustomer, addShutters, getCustomerById, updateCustomer, addExtraGlasses, addAmount, addOrderDetail}
+async function addOtherDetails(id, model) {
+    let customer = await Customer.findById(id)
+    customer.other = model.other
+    customer.totalAmount = model.amount
+    await customer.save()
+    return customer.toObject({flattenMaps:true})
+}
+
+module.exports = {addCustomer, getAllCustomer, addShutters, getCustomerById, updateCustomer, addExtraGlasses, addAmount, addOrderDetail, addOtherDetails}

@@ -14,11 +14,13 @@ import { CustomerService } from '../../../services/customer.service';
 })
 export class ViewCustomerComponent implements OnInit {
   editMode = false;
-  showAddShutterForm = false;
-  showAddGlassForm = false;
   selectedType: string | null = null;
   ifEditShutter: boolean = false;
   ifEditGlass: boolean = false;
+  ifEditOtherDetail: boolean = false
+  showShutterModal = false;
+  showGlassModal = false;
+  showOtherDetailModal = false
   selectedShutterId?: number;
   selectedGlassId?: number;
   materialDetails: any = [];
@@ -66,6 +68,9 @@ export class ViewCustomerComponent implements OnInit {
     glassThickness: '4mm',
     units: 1,
   };
+
+  otherDetails: { key: string; value: string }[] = [];
+  newOtherDetails: { key: string; value: string }[] = [];
 
   objectKeys = Object.keys;
 
@@ -130,19 +135,92 @@ export class ViewCustomerComponent implements OnInit {
     }
   }
 
-  toggleAddShutterForm() {
-    this.showAddShutterForm = !this.showAddShutterForm;
-    this.showAddGlassForm = false;
-    this.ifEditGlass = false;
-    this.selectedType = null;
-    this.resetShutterForm();
+  openShutterModal(edit = false, index?: number, data?: any) {
+    this.ifEditShutter = edit;
+    this.selectedShutterId = index;
+    this.showShutterModal = true;
+
+    if (edit && data) {
+      this.selectedType = data.type;
+      this.newShutter = { ...data };
+    } else {
+      this.resetShutterForm();
+      this.selectedType = null;
+    }
   }
 
-  toggleAddGlassForm() {
-    this.showAddGlassForm = !this.showAddGlassForm;
-    this.showAddShutterForm = false;
-    this.ifEditShutter = false;
-    this.resetGlassForm();
+  openGlassModal(edit = false, index?: number, data?: any) {
+    this.ifEditGlass = edit;
+    this.selectedGlassId = index;
+    this.showGlassModal = true;
+
+    if (edit && data) {
+      this.newGlass = { ...data };
+    } else {
+      this.resetGlassForm();
+    }
+  }
+
+  openOtherDetailModal(edit = false) {
+    this.ifEditOtherDetail = edit
+    this.showOtherDetailModal = true
+
+    if (edit) {
+      this.newOtherDetails = JSON.parse(
+        JSON.stringify(this.customer.other)
+      );
+    } else {
+      this.resetOtherDetailForm();
+    }
+  }
+
+  addMoreOtherDetail() {
+    this.newOtherDetails.push({ key: '', value: '' });
+  }
+
+  removeOtherDetail(index: number) {
+    this.newOtherDetails.splice(index, 1);
+  }
+
+  async saveOtherDetail() {
+    // basic validation
+    if (this.newOtherDetails.some(d => !d.key || !d.value)) {
+      alert('Please fill all key and value fields');
+      return;
+    }
+
+    if (this.ifEditOtherDetail) {
+      this.otherDetails = [...this.newOtherDetails]
+    } else {
+      this.otherDetails = [...(this.customer?.other || []),
+      ...this.newOtherDetails
+      ];
+    }
+
+    const data = await this.customerService.getInvoiceDetails(this.materialSummary, this.materialDetails)
+    const otherDetailAmount = this.otherDetails.reduce((sum, item) => {
+      return sum + Number(item.value || 0);
+    }, 0)
+    const otherDTO = {
+      other: this.otherDetails,
+      amount: parseInt(data.grandTotal.toFixed(0)) + otherDetailAmount
+    }
+
+    if (this.customerId)
+      this.customerService.addOtherDetails(this.customerId, otherDTO).subscribe((res) => {
+        alert("Other Details saved successfully!")
+        this.customer = res
+        this.closeModal()
+      })
+  }
+
+  closeModal() {
+    this.showShutterModal = false;
+    this.ifEditShutter = false
+    this.showGlassModal = false;
+    this.ifEditGlass = false
+    this.showOtherDetailModal = false
+    this.ifEditOtherDetail = false
   }
 
   selectType(type: string) {
@@ -173,13 +251,13 @@ export class ViewCustomerComponent implements OnInit {
 
     // ✅ Handle all shutter type calculations
     if (type === 'Without Handle') {
-      patti45mm = height * 2 + width * 2;
+      patti45mm = (height + 1) * 2 + (width + 1) * 2;
     } else if (type === 'Top Handle' || type === 'Bottom Handal') {
-      patti45mm = height * 2 + width;
-      handal68mm = width;
+      patti45mm = (height + 1) * 2 + (width + 1);
+      handal68mm = width + 2;
     } else if (type === 'Left Handle' || type === 'Right Handal') {
-      patti45mm = height + width * 2;
-      handal68mm = height;
+      patti45mm = (height + 1) + (width + 1) * 2;
+      handal68mm = height + 2;
     }
 
     // ✅ Convert inch → foot
@@ -220,12 +298,12 @@ export class ViewCustomerComponent implements OnInit {
       this.customerService.addShutters(this.customerId, shutterDTO).subscribe((res) => {
         alert('Shutter added successfully!')
         this.customer = res
+        this.closeModal()
       })
 
     // Reset form
     this.resetShutterForm();
     this.ifEditShutter = false;
-    this.showAddShutterForm = false;
     this.selectedType = null;
   }
 
@@ -269,11 +347,11 @@ export class ViewCustomerComponent implements OnInit {
       this.customerService.addGlasses(this.customerId, glassDTO).subscribe((res) => {
         alert('Glass added successfully!')
         this.customer = res
+        this.closeModal()
       })
 
     this.resetGlassForm();
     this.ifEditGlass = false;
-    this.showAddGlassForm = false;
   }
 
   resetShutterForm() {
@@ -302,35 +380,8 @@ export class ViewCustomerComponent implements OnInit {
     };
   }
 
-  editShutter(i: number, shutter: any) {
-    this.ifEditShutter = true;
-    this.showAddShutterForm = true;
-    this.selectedType = shutter.type;
-    this.selectedShutterId = i;
-
-    this.newShutter.type = shutter.type;
-    this.newShutter.height = shutter.height;
-    this.newShutter.width = shutter.width;
-    this.newShutter.hinges = shutter.hinges;
-    this.newShutter.profile = shutter.profile;
-    this.newShutter.glass = shutter.glass;
-    this.newShutter.pump = shutter.pump;
-    this.newShutter.hingesCount = shutter.hingesCount;
-    this.newShutter.pumpCount = shutter.pumpCount;
-    this.newShutter.units = shutter.units;
-  }
-
-  editGlass(i: number, glass: any) {
-    this.ifEditGlass = true;
-    this.showAddGlassForm = true;
-    this.selectedGlassId = i;
-
-    this.newGlass.height = glass.height;
-    this.newGlass.width = glass.width;
-    this.newGlass.glassName = glass.glassName;
-    this.newGlass.glassEdge = glass.glassEdge;
-    this.newGlass.glassThickness = glass.glassThickness;
-    this.newGlass.units = glass.units;
+  resetOtherDetailForm() {
+    this.newOtherDetails = [{ key: '', value: '' }];
   }
 
   async deleteShutter(i: number) {
@@ -426,28 +477,6 @@ export class ViewCustomerComponent implements OnInit {
       this.router.navigateByUrl('/view-invoice/' + this.customerId)
     }
   }
-
-  // saveShutters() {
-  //   const shutterDTO = {
-  //     shutters: this.shutters,
-  //     material: this.materialSummary
-  //   }
-  //   if (this.customerId)
-  //     this.customerService.addShutters(this.customerId, shutterDTO).subscribe((res) => {
-  //       alert('Shutters added successfully!')
-  //     })
-  // }
-
-  // saveGlasses() {
-  //   const glassDTO = {
-  //     glasses: this.glasses,
-  //     material: this.materialSummary
-  //   }
-  //   if (this.customerId)
-  //     this.customerService.addGlasses(this.customerId, glassDTO).subscribe((res) => {
-  //       alert('Glasses added successfully!')
-  //     })
-  // }
 
   submitOrderDetail() {
     const orderDTO = {

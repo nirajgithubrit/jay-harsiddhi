@@ -13,6 +13,7 @@ import { CustomerService } from '../../../services/customer.service';
 })
 export class AllCustomer implements OnInit {
   customers: any = []
+  filteredCustomers: any[] = [];
 
   constructor(private router: Router,
     private customerService: CustomerService) { }
@@ -20,10 +21,22 @@ export class AllCustomer implements OnInit {
   async ngOnInit() {
     const materials = await this.getMaterials()
     this.customerService.sendMaterialDetail(materials)
-    this.customerService.getAllCustomer().subscribe((res) => {
+    this.customerService.getAllCustomer().subscribe((res: any) => {
       this.customers = res
+      this.filteredCustomers = res
     })
     this.customerService.sendIndex(0)
+  }
+
+  onSearch(event: Event) {
+    const value = (event.target as HTMLInputElement).value
+      .toLowerCase()
+      .trim();
+
+    this.filteredCustomers = this.customers.filter((customer: any) =>
+      customer.name?.toLowerCase().includes(value) ||
+      customer.phoneNumber?.toString().includes(value)
+    );
   }
 
   goToAddCustomer() {

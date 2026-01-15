@@ -30,6 +30,12 @@ const ExtraGlassSchema = new mongoose.Schema({
   glassAreaFoot: { type: Number, default: 0 }
 }, { _id: false });
 
+// other schema
+const OtherSchema = new mongoose.Schema({
+  key:String,
+  value:Number
+}, { _id: false });
+
 // Patti sub-schema inside material.profilePatti
 const PattiSchema = new mongoose.Schema({
   patti45mm: { type: Number, default: 0 },
@@ -60,7 +66,8 @@ const customerSchema = new mongoose.Schema({
   paymentMethod:String,
   shutters: { type: [ShutterSchema], default: [] },
   extraGlasses: { type: [ExtraGlassSchema], default: [] },
-  material: { type: MaterialSchema, default: {} }
+  material: { type: MaterialSchema, default: {} },
+  other: { type: [OtherSchema], default: [] }
 }, { timestamps: true });
 
 const Customer = mongoose.model("customers", customerSchema)

@@ -1,18 +1,22 @@
 import { Component, OnInit } from '@angular/core';
 import { HeaderComponent } from '../header/header.component';
 import { CustomerService } from '../../../services/customer.service';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import pdfMake from 'pdfmake/build/pdfmake';
 import pdfFonts from 'pdfmake/build/vfs_fonts';
+import { Capacitor } from '@capacitor/core';
+import { Filesystem, Directory } from '@capacitor/filesystem'
+import { Share } from '@capacitor/share';
 import * as pdfjsLib from 'pdfjs-dist';
 import { version } from 'pdfjs-dist'
+import { CommonModule } from '@angular/common';
 (pdfjsLib as any).GlobalWorkerOptions.workerSrc =
   `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${version}/pdf.worker.min.js`
 
 @Component({
   selector: 'app-view-invoice',
   standalone: true,
-  imports: [HeaderComponent],
+  imports: [HeaderComponent, CommonModule],
   templateUrl: './view-invoice.component.html',
   styleUrl: './view-invoice.component.scss'
 })
@@ -21,6 +25,7 @@ export class ViewInvoiceComponent implements OnInit {
   imgSrc?: string
   customerId?: string
   pdfRef: any
+  isWeb: string = Capacitor.getPlatform()
 
   constructor(private customerService: CustomerService,
     private activatedRoute: ActivatedRoute,
@@ -35,7 +40,7 @@ export class ViewInvoiceComponent implements OnInit {
     const customer = await this.getCustomerDetail(this.customerId!)
     const materialDetails = await this.customerService.getMaterialDetail()
 
-    const data = await this.customerService.getInvoiceDetails(customer.material, materialDetails)
+    const data = await this.customerService.getInvoiceDetails(customer.material, materialDetails, customer.other)
     const docDefinition = await this.customerService.generateInvoice(customer, data.invoiceItems, data.grandTotal);
 
     this.pdfRef = pdfMake.createPdf(docDefinition, pdfMake.tableLayouts, pdfMake.fonts, pdfMake.vfs)
@@ -80,12 +85,55 @@ export class ViewInvoiceComponent implements OnInit {
 
   printInvoice() {
     if (!this.pdfRef) return;
-    this.pdfRef.print();
+
+    if (Capacitor.getPlatform() === 'web') {
+      this.pdfRef.print();
+      return;
+    }
+
+    this.pdfRef.getBase64(async (base64: string) => {
+      const fileName = `Invoice_Print.pdf`;
+
+      const savedFile = await Filesystem.writeFile({
+        path: fileName,
+        data: base64,
+        directory: Directory.Cache,
+      });
+
+      await Share.share({
+        title: 'Print Invoice',
+        url: savedFile.uri,
+      });
+    });
   }
 
   downloadInvoice() {
     if (!this.pdfRef) return;
-    this.pdfRef.download('Invoice.pdf');
+
+    if (Capacitor.getPlatform() === 'web') {
+      this.pdfRef.download('Invoice.pdf');
+      return;
+    }
+
+    this.pdfRef.getBase64(async (base64: string) => {
+      const fileName = `Invoice_${Date.now()}.pdf`;
+
+      // Save file to device
+      const savedFile = await Filesystem.writeFile({
+        path: fileName,
+        data: base64,
+        directory: Directory.Documents,
+      });
+
+      // Open system share sheet (Download / Open / Send)
+      await Share.share({
+        title: 'Invoice',
+        text: 'Invoice PDF',
+        url: savedFile.uri,
+        dialogTitle: 'Open Invoice',
+      });
+    });
+
   }
 
   async back() {
