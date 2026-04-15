@@ -34,7 +34,7 @@ export class AuthService {
 
   isSalesPerson(): boolean {
     const user = JSON.parse(localStorage.getItem('user') ?? '')
-    return user.isSalesPerson
+    return user.isSalesPerson || false
   }
 
   userName(): string {
