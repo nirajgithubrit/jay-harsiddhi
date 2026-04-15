@@ -45,12 +45,12 @@ export class AddBrandComponent implements OnInit {
     if (this.isEditMode && this.brandId) {
       this.adminService.updateItem('brand', this.brandId, this.brandForm.value).subscribe((res) => {
         this.adminService.setTab(2);
-        this.router.navigateByUrl('admin');
+        this.router.navigate(['/admin']);
       })
     } else {
       this.adminService.addItem('brand', this.brandForm.value).subscribe((res) => {
         this.adminService.setTab(2);
-        this.router.navigateByUrl('admin');
+        this.router.navigate(['/admin']);
       })
     }
   }

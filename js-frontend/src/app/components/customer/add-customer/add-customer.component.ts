@@ -30,7 +30,7 @@ export class AddCustomerComponent implements OnInit {
   addCustomer() {
     this.customerService.addCustomer(this.customerForm.value).subscribe((res) => {
       alert("Customer Added Successfully!")
-      this.router.navigateByUrl('')
+      this.router.navigate([''])
     })
   }
 }

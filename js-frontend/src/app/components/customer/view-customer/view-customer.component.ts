@@ -18,9 +18,11 @@ export class ViewCustomerComponent implements OnInit {
   ifEditShutter: boolean = false;
   ifEditGlass: boolean = false;
   ifEditOtherDetail: boolean = false
+  ifEditComment: boolean = false
   showShutterModal = false;
   showGlassModal = false;
   showOtherDetailModal = false
+  showCommentModal = false
   selectedShutterId?: number;
   selectedGlassId?: number;
   materialDetails: any = [];
@@ -71,6 +73,9 @@ export class ViewCustomerComponent implements OnInit {
 
   otherDetails: { key: string; value: string }[] = [];
   newOtherDetails: { key: string; value: string }[] = [];
+
+  Comments: string[] = []
+  newComment: string[] = [];
 
   objectKeys = Object.keys;
 
@@ -161,6 +166,7 @@ export class ViewCustomerComponent implements OnInit {
     }
   }
 
+  //Other Details
   openOtherDetailModal(edit = false) {
     this.ifEditOtherDetail = edit
     this.showOtherDetailModal = true
@@ -214,6 +220,51 @@ export class ViewCustomerComponent implements OnInit {
       })
   }
 
+  // Comment Details
+  openCommentModal(edit = false) {
+    this.ifEditComment = edit
+    this.showCommentModal = true
+
+    if (edit) {
+      this.newComment = this.customer?.comments?.length
+        ? JSON.parse(JSON.stringify(this.customer.comments))
+        : [''];
+    } else {
+      this.resetCommentForm();
+    }
+  }
+
+  addMoreComment() {
+    this.newComment.push('');
+  }
+
+  removeComment(index: number) {
+    this.newComment.splice(index, 1);
+  }
+
+  async saveComment() {
+    // basic validation
+    if (this.newComment.some(d => !d)) {
+      alert('Please fill all fields');
+      return;
+    }
+
+    if (this.ifEditComment) {
+      this.Comments = [...this.newComment]
+    } else {
+      this.Comments = [...(this.customer?.comments || []),
+      ...this.newComment
+      ];
+    }
+
+    if (this.customerId)
+      this.customerService.addComments(this.customerId, this.Comments).subscribe((res) => {
+        alert("Comments saved successfully!")
+        this.customer = res
+        this.closeModal()
+      })
+  }
+
   closeModal() {
     this.showShutterModal = false;
     this.ifEditShutter = false
@@ -221,6 +272,8 @@ export class ViewCustomerComponent implements OnInit {
     this.ifEditGlass = false
     this.showOtherDetailModal = false
     this.ifEditOtherDetail = false
+    this.showCommentModal = false
+    this.ifEditComment = false
   }
 
   selectType(type: string) {
@@ -384,6 +437,10 @@ export class ViewCustomerComponent implements OnInit {
     this.newOtherDetails = [{ key: '', value: '' }];
   }
 
+  resetCommentForm() {
+    this.newComment = ['']
+  }
+
   async deleteShutter(i: number) {
     this.shutters.splice(i, 1);
     const data = await this.customerService.getInvoiceDetails(this.materialSummary, this.materialDetails)
@@ -474,7 +531,7 @@ export class ViewCustomerComponent implements OnInit {
 
   async goToInvoice() {
     if (this.customerId) {
-      this.router.navigateByUrl('/view-invoice/' + this.customerId)
+      this.router.navigate(['/view-invoice/', this.customerId])
     }
   }
 
@@ -489,5 +546,9 @@ export class ViewCustomerComponent implements OnInit {
       this.customerService.addOrderDetails(this.customerId, orderDTO).subscribe((res) => {
         alert("Order Detail Successfully Submitted.")
       })
+  }
+
+  trackByIndex(index: number) {
+    return index;
   }
 }

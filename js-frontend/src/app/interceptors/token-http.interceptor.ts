@@ -4,7 +4,7 @@ import { catchError, throwError, switchMap } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { Router } from '@angular/router';
 
-export const tokenHttpInterceptorInterceptor: HttpInterceptorFn = (req, next) => {
+export const tokenHttpInterceptor: HttpInterceptorFn = (req, next) => {
   const http = inject(HttpClient);
   const router = inject(Router)
   const accessToken = localStorage.getItem('accessToken');
@@ -61,6 +61,6 @@ export const tokenHttpInterceptorInterceptor: HttpInterceptorFn = (req, next) =>
 
   function logout() {
     localStorage.clear();
-    router.navigateByUrl('/login')
+    router.navigate(['/login'])
   }
 };

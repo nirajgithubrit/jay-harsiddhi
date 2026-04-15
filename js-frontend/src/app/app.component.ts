@@ -16,11 +16,11 @@ export class AppComponent implements OnInit {
 
   ngOnInit(): void {
     if (this.authService.isAdmin()) {
-      this.router.navigateByUrl('admin');
+      this.router.navigate(['/admin']);
     } else if (this.authService.isSalesPerson()) {
-      this.router.navigateByUrl('');
+      this.router.navigate(['/']);
     } else {
-      this.router.navigateByUrl('account-pending')
+      this.router.navigate(['/account-pending'])
     }
   }
 }

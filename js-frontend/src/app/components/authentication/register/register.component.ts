@@ -35,7 +35,7 @@ export class RegisterComponent {
     if (this.registerForm.valid) {
       this.authService.register(this.registerForm.value).subscribe((res) => {
         alert('Register Successfully!');
-        this.router.navigateByUrl('/login');
+        this.router.navigate(['/login']);
       });
     } else {
       this.registerForm.markAllAsTouched();

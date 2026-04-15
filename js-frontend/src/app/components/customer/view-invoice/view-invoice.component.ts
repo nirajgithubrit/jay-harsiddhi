@@ -141,9 +141,9 @@ export class ViewInvoiceComponent implements OnInit {
     this.customerService.getIndex.subscribe((res) => {
       index = res
       if ((index ?? 0) == 0) {
-        this.router.navigateByUrl('/')
+        this.router.navigate(['/'])
       } else if ((index ?? 0) == 1) {
-        this.router.navigateByUrl('view-customer/' + this.customerId!)
+        this.router.navigate(['view-customer/', this.customerId!])
       }
     })
   }

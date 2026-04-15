@@ -24,7 +24,7 @@ export class ColorListComponent implements OnInit {
   }
 
   updateFinish(finish: any) {
-    this.router.navigateByUrl('admin/edit-color/' + finish._id);
+    this.router.navigate(['/admin/edit-color/', finish._id]);
   }
 
   deleteFinish(finish: any) {
@@ -36,6 +36,6 @@ export class ColorListComponent implements OnInit {
   }
 
   openAddColor() {
-    this.router.navigateByUrl('admin/add-color');
+    this.router.navigate(['/admin/add-color']);
   }
 }

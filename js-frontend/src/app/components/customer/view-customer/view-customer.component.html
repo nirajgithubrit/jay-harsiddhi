@@ -85,6 +85,14 @@
           >
             + Add Other
           </button>
+
+          <button
+            class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md w-full sm:w-auto disabled:opacity-50 disabled:cursor-not-allowed"
+            (click)="openCommentModal()"
+            [disabled]="ifEditComment"
+          >
+            + Add Comment
+          </button>
         </div>
       </div>
     </div>
@@ -245,6 +253,46 @@
       </div>
     </div>
 
+    <!-- Comment Table -->
+    <div
+      class="bg-white rounded-xl shadow p-4 sm:p-6 mb-6"
+      *ngIf="(customer?.comments.length ?? 0) > 0"
+    >
+      <div
+        class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-4"
+      >
+        <h2 class="text-xl sm:text-2xl font-bold text-blue-800">
+          Added Comments
+        </h2>
+        <div class="flex flex-col sm:flex-row gap-3">
+          <button
+            class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md w-full sm:w-auto disabled:opacity-50 disabled:cursor-not-allowed"
+            (click)="openCommentModal(true)"
+          >
+            + Edit Comments
+          </button>
+        </div>
+      </div>
+
+      <div class="overflow-auto">
+        <table class="w-full border-collapse">
+          <thead>
+            <tr class="bg-blue-100 text-left">
+              <th class="p-2">Comments</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              *ngFor="let o of customer.comments; let i = index"
+              class="border-b"
+            >
+              <td class="p-2">{{ customer.comments[i] }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
     <!-- Material Summary -->
     <div
       *ngIf="customer.shutters.length > 0 || customer.extraGlasses.length > 0"
@@ -303,7 +351,7 @@
           <div *ngFor="let key of objectKeys(materialSummary.glassArea)">
             <p class="font-bold text-blue-700">
               {{ key }} :
-              {{ materialSummary.glassArea[key] | number : "1.2-2" }}
+              {{ materialSummary.glassArea[key] | number: "1.2-2" }}
               ft²
             </p>
           </div>
@@ -314,7 +362,7 @@
           <div *ngFor="let key of objectKeys(materialSummary.addedGlassArea)">
             <p class="font-bold text-blue-700">
               {{ key }} :
-              {{ materialSummary.addedGlassArea[key] | number : "1.2-2" }}
+              {{ materialSummary.addedGlassArea[key] | number: "1.2-2" }}
               ft²
             </p>
           </div>
@@ -566,7 +614,7 @@
     (click)="closeModal()"
   ></div>
 
-  <!-- Modal -->
+  <!--Modal -->
   <div
     class="relative bg-white w-full max-w-2xl mx-4 rounded-xl shadow-2xl p-6 animate-fade-in"
   >
@@ -718,6 +766,73 @@
         (click)="saveOtherDetail()"
       >
         Save Details
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- COMMENT MODAL -->
+<div
+  *ngIf="showCommentModal"
+  class="fixed inset-0 z-50 flex items-center justify-center"
+>
+  <!-- Backdrop -->
+  <div
+    class="absolute inset-0 bg-black/50 backdrop-blur-sm"
+    (click)="closeModal()"
+  ></div>
+
+  <!-- Modal -->
+  <div
+    class="relative bg-white w-full max-w-2xl mx-4 rounded-xl shadow-2xl p-6 animate-fade-in"
+  >
+    <!-- Header -->
+    <h3 class="text-xl font-bold text-blue-800 mb-4">
+      {{ ifEditComment ? "Edit Comment" : "Add Comment" }}
+    </h3>
+
+    <!-- Form -->
+    <div class="space-y-3">
+      <div
+        *ngFor="let item of newComment; let i = index; trackBy: trackByIndex"
+        class="grid grid-cols-12 gap-2 items-center"
+      >
+        <input
+          type="text"
+          placeholder="Enter Comment"
+          class="border p-2 rounded-md col-span-5"
+          [(ngModel)]="newComment[i]"
+        />
+
+        <button
+          *ngIf="newComment.length > 1"
+          class="text-red-500 col-span-2"
+          (click)="removeComment(i)"
+        >
+          ✕
+        </button>
+      </div>
+    </div>
+
+    <!-- Add More -->
+    <button
+      class="mt-4 text-blue-600 hover:underline"
+      (click)="addMoreComment()"
+    >
+      + Add More
+    </button>
+
+    <!-- Footer -->
+    <div class="mt-6 flex justify-end gap-3">
+      <button class="px-4 py-2 rounded-md border" (click)="closeModal()">
+        Cancel
+      </button>
+
+      <button
+        class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md"
+        (click)="saveComment()"
+      >
+        Save Comments
       </button>
     </div>
   </div>

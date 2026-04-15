@@ -71,6 +71,10 @@ export class CustomerService {
     return this.http.post(environment.apiUrl + '/customer/' + id + '/add-other', data)
   }
 
+  addComments(id: string, data: string[]) {
+    return this.http.post(environment.apiUrl + '/customer/' + id + '/add-comment', data)
+  }
+
   async getInvoiceDetails(materialSummary: any, materialDetails: any, otherDetail?: any[]): Promise<any> {
     return new Promise((resolve, reject) => {
       const profileAmount = this.calculateProfilePattiAmount(
@@ -465,6 +469,23 @@ export class CustomerService {
                         },
                         margin: [0, 0, 0, 6],
                       },
+
+                      // Comments Section
+                      ...(customer.comments && customer.comments.length
+                        ? [
+                          {
+                            text: 'Notes:',
+                            bold: true,
+                            margin: [0, 10, 0, 4],
+                            fontSize: 11
+                          },
+                          {
+                            ul: customer.comments.map((c: string) => c),
+                            fontSize: 10,
+                            margin: [0, 0, 0, 5]
+                          }
+                        ]
+                        : [])
                     ],
                     border: true,
                   },

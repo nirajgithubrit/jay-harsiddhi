@@ -34,11 +34,11 @@ export class MaterialListComponent implements OnInit {
   }
 
   openAddMaterial() {
-    this.router.navigateByUrl('admin/add-material');
+    this.router.navigate(['/admin/add-material']);
   }
 
   editMaterial(material: any) {
-    this.router.navigateByUrl('admin/edit-material/' + material._id);
+    this.router.navigate(['/admin/edit-material/', material._id]);
   }
 
   deleteMaterial(id: number) { }

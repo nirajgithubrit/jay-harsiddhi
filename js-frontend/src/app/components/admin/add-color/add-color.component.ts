@@ -45,12 +45,12 @@ export class AddColorComponent implements OnInit {
     if (this.isEditMode && this.colorId) {
       this.adminService.updateItem('color', this.colorId, this.colorForm.value).subscribe((res) => {
         this.adminService.setTab(3);
-        this.router.navigateByUrl('admin');
+        this.router.navigate(['/admin']);
       })
     } else {
       this.adminService.addItem('color', this.colorForm.value).subscribe((res) => {
         this.adminService.setTab(3);
-        this.router.navigateByUrl('admin');
+        this.router.navigate(['/admin']);
       })
     }
   }

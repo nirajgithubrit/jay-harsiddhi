@@ -41,11 +41,11 @@ export class LoginComponent {
             localStorage.setItem("refreshToken", res.refreshToken);
             localStorage.setItem('user', JSON.stringify(res.userObj));
             if (this.authService.isAdmin()) {
-              this.router.navigateByUrl('admin')
+              this.router.navigate(['/admin'])
             } else if (this.authService.isSalesPerson()) {
-              this.router.navigateByUrl('');
+              this.router.navigate(['']);
             } else {
-              this.router.navigateByUrl('account-pending')
+              this.router.navigate(['/account-pending'])
             }
           },
           error: (err: any) => {
@@ -56,5 +56,9 @@ export class LoginComponent {
     } else {
       this.loginForm.markAllAsTouched();
     }
+  }
+
+  goToRegister() {
+    this.router.navigate(['/register'])
   }
 }

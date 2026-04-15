@@ -74,12 +74,12 @@ export class AddMaterialComponent implements OnInit {
     if (this.isEditMode && this.materialId) {
       this.adminService.updateItem('material', this.materialId, this.materialForm.value as any).subscribe((res) => {
         this.adminService.setTab(0);
-        this.router.navigateByUrl('/admin');
+        this.router.navigate(['/admin']);
       })
     } else {
       this.adminService.addItem('material', this.materialForm.value as any).subscribe((res) => {
         this.adminService.setTab(0);
-        this.router.navigateByUrl('/admin');
+        this.router.navigate(['/admin']);
       })
     }
   }

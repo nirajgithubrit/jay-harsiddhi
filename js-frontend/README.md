@@ -25,3 +25,15 @@ Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To u
 ## Further help
 
 To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+
+## sync app
+
+Run `npx cap sync` to execute sync code in Android/IOS
+
+## To open the project in Android Studio
+
+Run `npx cap open android` to open Android studio
+
+## To run the project on a device or emulator
+
+Run `npx cap run android`
