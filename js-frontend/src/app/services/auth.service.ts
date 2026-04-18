@@ -28,18 +28,27 @@ export class AuthService {
   }
 
   isAdmin(): boolean {
-    const user = JSON.parse(localStorage.getItem('user') ?? '');
-    return user.isAdmin || false;
+    const userStr = localStorage.getItem('user');
+    if (!userStr) return false;
+
+    const user = JSON.parse(userStr);
+    return user?.isAdmin || false;
   }
 
   isSalesPerson(): boolean {
-    const user = JSON.parse(localStorage.getItem('user') ?? '')
-    return user.isSalesPerson || false
+    const userStr = localStorage.getItem('user');
+    if (!userStr) return false;
+
+    const user = JSON.parse(userStr);
+    return user?.isSalesPerson || false;
   }
 
   userName(): string {
-    const user = JSON.parse(localStorage.getItem('user') ?? '')
-    return user.name || ''
+    const userStr = localStorage.getItem('user');
+    if (!userStr) return '';
+
+    const user = JSON.parse(userStr);
+    return user?.name || '';
   }
 
   logout() {

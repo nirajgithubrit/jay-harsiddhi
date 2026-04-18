@@ -49,8 +49,11 @@ export class LoginComponent {
             }
           },
           error: (err: any) => {
-            console.error('LOGIN ERROR:', JSON.stringify(err));
-            console.error(err);
+            console.log('FULL ERROR:', err);
+
+            if (err.status === 0) {
+              console.log('👉 Server not reachable / CORS / Render sleep issue');
+            }
           }
         });
     } else {
