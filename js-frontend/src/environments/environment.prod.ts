@@ -1,4 +1,4 @@
 export const environment = {
     production: true,
-    apiUrl: 'https://jay-harsiddhi-api.onrender.com'
+    apiUrl: "https://jay-harsiddhi.onrender.com"
 };
