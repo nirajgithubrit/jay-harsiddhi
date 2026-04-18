@@ -3,49 +3,72 @@ const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
 const cors = require("cors");
+
 const port = process.env.PORT || 3000;
+
 const authRoute = require("./routes/auth");
 const brandRoute = require("./routes/brand");
 const categoryRoute = require("./routes/category");
 const colorRoute = require("./routes/color");
 const materialRoute = require("./routes/material");
 const customerRoute = require("./routes/customer");
+
 const {
   verifyToken,
   isAdmin,
   isSalesPerson,
 } = require("./middleware/auth-middleware");
 
-//Allow access to .env file
+// Load env
 dotenv.config();
 
 mongoose.set("strictQuery", true);
 
+// ✅ Allowed origins
 const allowedOrigins = [
   "https://jayharsiddhi.netlify.app",
   "http://localhost:4200",
 ];
 
+// ✅ CORS setup
 app.use(
   cors({
     origin: function (origin, callback) {
       if (!origin || allowedOrigins.includes(origin)) {
         callback(null, true);
       } else {
-        callback(null, false);
+        callback(new Error("Not allowed by CORS"));
       }
     },
+    credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
-    credentials: true,
   }),
 );
 
+// ✅ 🔥 IMPORTANT: Handle preflight requests
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "https://jayharsiddhi.netlify.app");
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept, Authorization",
+  );
+  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+
+  if (req.method === "OPTIONS") {
+    return res.sendStatus(200); // 🔥 FIXES CORS ISSUE
+  }
+
+  next();
+});
+
+// Body parsers
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ limit: "10mb", extended: true }));
 
+// ✅ Test route
 app.get("/", (req, res) => {
-  res.send("server running");
+  res.send("API is running 🚀");
 });
 
 app.get("/test-db", async (req, res) => {
@@ -53,6 +76,7 @@ app.get("/test-db", async (req, res) => {
   res.json({ mongoState: state });
 });
 
+// Routes
 app.use("/auth", authRoute);
 app.use("/brand", verifyToken, isAdmin, brandRoute);
 app.use("/category", verifyToken, isAdmin, categoryRoute);
@@ -60,6 +84,7 @@ app.use("/color", verifyToken, isAdmin, colorRoute);
 app.use("/material", verifyToken, isAdmin, materialRoute);
 app.use("/customer", verifyToken, isSalesPerson, customerRoute);
 
+// DB connect
 async function connectDb() {
   try {
     await mongoose.connect(process.env.MONGO_URI, {
@@ -72,10 +97,9 @@ async function connectDb() {
   }
 }
 
-connectDb().catch((err) => {
-  console.log(err);
-});
+connectDb().catch((err) => console.log(err));
 
+// Start server
 app.listen(port, () => {
   console.log("server is running", port);
 });
