@@ -24,7 +24,7 @@ export class BrandListComponent implements OnInit {
   }
 
   updateBrand(brand: any) {
-    this.router.navigate(['/admin/edit-brand/', brand._id]);
+    this.router.navigate(['/admin/brand/edit/', brand._id]);
   }
 
   deleteBrand(brand: any) {
@@ -36,6 +36,6 @@ export class BrandListComponent implements OnInit {
   }
 
   openAddBrand() {
-    this.router.navigate(['/admin/add-brand']);
+    this.router.navigate(['/admin/brand/add']);
   }
 }

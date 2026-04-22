@@ -1,86 +1,90 @@
 import { Routes } from '@angular/router';
+
 import { LoginComponent } from './components/authentication/login/login.component';
 import { RegisterComponent } from './components/authentication/register/register.component';
+import { AccountPendingComponent } from './components/authentication/account-pending/account-pending.component';
+
 import { AllCustomer } from './components/customer/all-customer/all-customer.component';
-import { authGuard } from './core/auth-guard.guard';
+import { AddCustomerComponent } from './components/customer/add-customer/add-customer.component';
+import { ViewCustomerComponent } from './components/customer/view-customer/view-customer.component';
+import { ViewInvoiceComponent } from './components/customer/view-invoice/view-invoice.component';
+
 import { AdminPageComponent } from './components/admin/admin-page/admin-page.component';
 import { AddMaterialComponent } from './components/admin/add-material/add-material.component';
 import { AddBrandComponent } from './components/admin/add-brand/add-brand.component';
 import { AddCategoryComponent } from './components/admin/add-category/add-category.component';
 import { AddColorComponent } from './components/admin/add-color/add-color.component';
-import { AddCustomerComponent } from './components/customer/add-customer/add-customer.component';
-import { ViewCustomerComponent } from './components/customer/view-customer/view-customer.component';
-import { ViewInvoiceComponent } from './components/customer/view-invoice/view-invoice.component';
-import { AccountPendingComponent } from './components/authentication/account-pending/account-pending.component';
+
+import { authGuard } from './core/auth-guard.guard';
 
 export const routes: Routes = [
-  {
-    path: '',
-    component: AllCustomer,
-    canActivate: [authGuard]
-  },
-  {
-    path: 'add-customer',
-    component: AddCustomerComponent,
-    canActivate: [authGuard]
-  },
-  {
-    path: 'view-customer/:id',
-    component: ViewCustomerComponent,
-    canActivate: [authGuard]
-  },
-  {
-    path: 'view-invoice/:id',
-    component: ViewInvoiceComponent,
-    canActivate: [authGuard]
-  },
-  {
-    path: 'admin',
-    component: AdminPageComponent,
-    canActivate: [authGuard]
-  },
-  {
-    path: 'admin/add-material',
-    component: AddMaterialComponent,
-  },
-  {
-    path: 'admin/edit-material/:id',
-    component: AddMaterialComponent,
-  },
-  {
-    path: 'admin/add-brand',
-    component: AddBrandComponent,
-  },
-  {
-    path: 'admin/edit-brand/:id',
-    component: AddBrandComponent,
-  },
-  {
-    path: 'admin/add-category',
-    component: AddCategoryComponent,
-  },
-  {
-    path: 'admin/edit-category/:id',
-    component: AddCategoryComponent,
-  },
-  {
-    path: 'admin/add-color',
-    component: AddColorComponent,
-  },
-  {
-    path: 'admin/edit-color/:id',
-    component: AddColorComponent,
-  },
+
+  // 🔓 Public Routes
   {
     path: 'login',
-    component: LoginComponent,
+    component: LoginComponent
   },
   {
     path: 'register',
-    component: RegisterComponent,
+    component: RegisterComponent
   },
   {
     path: 'account-pending',
     component: AccountPendingComponent
+  },
+
+  // 🔐 Protected Routes
+  {
+    path: '',
+    canActivate: [authGuard],
+    children: [
+
+      // 🏠 Dashboard
+      {
+        path: '',
+        component: AllCustomer
+      },
+
+      // 👤 Customer
+      {
+        path: 'customer',
+        children: [
+          { path: 'add', component: AddCustomerComponent },
+          { path: 'view/:id', component: ViewCustomerComponent },
+          { path: 'invoice/:id', component: ViewInvoiceComponent }
+        ]
+      },
+
+      // 🛠 Admin (grouped)
+      {
+        path: 'admin',
+        children: [
+          { path: '', redirectTo: 'admin', pathMatch: 'full' },
+          { path: '', component: AdminPageComponent },
+
+          // Material
+          { path: 'material/add', component: AddMaterialComponent },
+          { path: 'material/edit/:id', component: AddMaterialComponent },
+
+          // Brand
+          { path: 'brand/add', component: AddBrandComponent },
+          { path: 'brand/edit/:id', component: AddBrandComponent },
+
+          // Category
+          { path: 'category/add', component: AddCategoryComponent },
+          { path: 'category/edit/:id', component: AddCategoryComponent },
+
+          // Color
+          { path: 'color/add', component: AddColorComponent },
+          { path: 'color/edit/:id', component: AddColorComponent }
+        ]
+      }
+    ]
+  },
+
+  // ❌ Fallback Route
+  {
+    path: '**',
+    redirectTo: ''
   }
 ];

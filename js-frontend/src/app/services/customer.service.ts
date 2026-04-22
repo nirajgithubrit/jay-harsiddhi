@@ -75,6 +75,8 @@ export class CustomerService {
     return this.http.post(environment.apiUrl + '/customer/' + id + '/add-comment', data)
   }
 
+  //invoice 
+
   async getInvoiceDetails(materialSummary: any, materialDetails: any, otherDetail?: any[]): Promise<any> {
     return new Promise((resolve, reject) => {
       const profileAmount = this.calculateProfilePattiAmount(
@@ -109,7 +111,7 @@ export class CustomerService {
       let invoiceItems = [];
 
       if (profileAmount.grandTotal > 0) {
-        invoiceItems.push({ name: 'Finish Profile', amount: profileAmount.grandTotal })
+        invoiceItems.push({ name: 'Blandox Finish Profile', amount: profileAmount.grandTotal })
       }
 
       if (connectorAmount > 0) {

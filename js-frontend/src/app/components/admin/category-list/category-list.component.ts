@@ -24,7 +24,7 @@ export class CategoryListComponent implements OnInit {
   }
 
   updateCategory(category: any) {
-    this.router.navigate(['/admin/edit-category/', category._id]);
+    this.router.navigate(['/admin/category/edit/', category._id]);
   }
 
   deleteCategory(category: any) {
@@ -36,6 +36,6 @@ export class CategoryListComponent implements OnInit {
   }
 
   openAddCategory() {
-    this.router.navigate(['/admin/add-category']);
+    this.router.navigate(['/admin/category/add']);
   }
 }

@@ -7,12 +7,12 @@ import {
   Validators,
 } from '@angular/forms';
 import { AuthService } from '../../../services/auth.service';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [ReactiveFormsModule, CommonModule],
+  imports: [ReactiveFormsModule, CommonModule, RouterLink],
   templateUrl: './register.component.html',
   styleUrl: './register.component.scss',
 })
@@ -33,10 +33,22 @@ export class RegisterComponent {
 
   onSubmit() {
     if (this.registerForm.valid) {
-      this.authService.register(this.registerForm.value).subscribe((res) => {
-        alert('Register Successfully!');
-        this.router.navigate(['/login']);
+      this.authService.register(this.registerForm.value).subscribe({
+
+        next: (res) => {
+          alert('Register Successfully!')
+          this.router.navigate(['/login'])
+        },
+
+        error: (err) => {
+          if (err.error?.error) {
+            alert(err.error.error); // ✅ "User already exists"
+          } else {
+            alert('Something went wrong');
+          }
+        }
       });
+
     } else {
       this.registerForm.markAllAsTouched();
     }

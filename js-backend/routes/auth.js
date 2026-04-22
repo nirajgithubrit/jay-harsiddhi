@@ -3,15 +3,20 @@ const { registerUser, loginUser } = require("../handlers/auth-handler");
 const router = express.Router();
 
 router.post("/register", async (req, res) => {
-  let model = req.body;
-  if (model.name && model.email && model.password) {
-    await registerUser(model);
-    res.send({
-      message: "User Registered",
-    });
-  } else {
+  try {
+    let model = req.body;
+
+    if (model.name && model.email && model.password) {
+      const result = await registerUser(model);
+      res.send(result);
+    } else {
+      res.status(400).json({
+        error: "Please Provide name, email and password",
+      });
+    }
+  } catch (err) {
     res.status(400).json({
-      error: "Please Provide name, email and password",
+      error: err.message, // 🔥 send proper message
     });
   }
 });

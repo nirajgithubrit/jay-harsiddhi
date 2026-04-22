@@ -15,12 +15,15 @@ export class AppComponent implements OnInit {
   constructor(private authService: AuthService, private router: Router) { }
 
   ngOnInit(): void {
+    const getToken = localStorage.getItem('accessToken')
     if (this.authService.isAdmin()) {
       this.router.navigate(['/admin']);
     } else if (this.authService.isSalesPerson()) {
       this.router.navigate(['/']);
-    } else {
+    } else if (getToken) {
       this.router.navigate(['/account-pending'])
+    } else {
+      this.router.navigate(['/login'])
     }
   }
 }

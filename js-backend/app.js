@@ -25,10 +25,7 @@ dotenv.config();
 mongoose.set("strictQuery", true);
 
 // ✅ Allowed origins
-const allowedOrigins = [
-  "https://jayharsiddhi.netlify.app",
-  "http://localhost:4200",
-];
+const allowedOrigins = process.env.ALLOWED_ORIGINS.split(",");
 
 // ✅ CORS setup
 app.use(
@@ -41,14 +38,17 @@ app.use(
       }
     },
     credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
   }),
 );
 
 // ✅ 🔥 IMPORTANT: Handle preflight requests
 app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "https://jayharsiddhi.netlify.app");
+  const origin = req.headers.origin;
+
+  if (allowedOrigins.includes(origin)) {
+    res.header("Access-Control-Allow-Origin", origin); // 🔥 dynamic
+  }
+
   res.header(
     "Access-Control-Allow-Headers",
     "Origin, X-Requested-With, Content-Type, Accept, Authorization",

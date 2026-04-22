@@ -531,7 +531,7 @@ export class ViewCustomerComponent implements OnInit {
 
   async goToInvoice() {
     if (this.customerId) {
-      this.router.navigate(['/view-invoice/', this.customerId])
+      this.router.navigate(['/customer/invoice/', this.customerId])
     }
   }
 

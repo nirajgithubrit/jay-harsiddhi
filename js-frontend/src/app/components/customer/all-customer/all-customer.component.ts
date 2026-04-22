@@ -40,15 +40,15 @@ export class AllCustomer implements OnInit {
   }
 
   goToAddCustomer() {
-    this.router.navigate(['/add-customer']);
+    this.router.navigate(['/customer/add']);
   }
 
   goToViewCustomer(id: number) {
-    this.router.navigate(['/view-customer/', id]);
+    this.router.navigate(['/customer/view/', id]);
   }
 
   showInvoice(customer: any) {
-    this.router.navigate(['/view-invoice/', customer._id])
+    this.router.navigate(['/customer/invoice/', customer._id])
   }
 
   async getMaterials(): Promise<any> {

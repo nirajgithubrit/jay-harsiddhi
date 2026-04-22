@@ -143,7 +143,7 @@ export class ViewInvoiceComponent implements OnInit {
       if ((index ?? 0) == 0) {
         this.router.navigate(['/'])
       } else if ((index ?? 0) == 1) {
-        this.router.navigate(['view-customer/', this.customerId!])
+        this.router.navigate(['/customer/view/', this.customerId!])
       }
     })
   }
